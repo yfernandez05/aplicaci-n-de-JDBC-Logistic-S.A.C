@@ -2,12 +2,14 @@ package grupocho.logisticsac.dao;
 
 import grupocho.logisticsac.enums.AmbitoDocumento;
 import grupocho.logisticsac.modelo.TipoDocumento;
+import grupocho.logisticsac.repository.TipoDocumentoRepository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TipoDocumentoDAO {
+public class TipoDocumentoDAO implements TipoDocumentoRepository {
 
     public void insertar(Connection conexion, TipoDocumento tipoDocumento) throws SQLException {
 

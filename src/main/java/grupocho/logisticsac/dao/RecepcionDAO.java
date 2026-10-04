@@ -1,13 +1,14 @@
 package grupocho.logisticsac.dao;
 
 import grupocho.logisticsac.modelo.Recepcion;
+import grupocho.logisticsac.repository.RecepcionRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public class RecepcionDAO {
+public class RecepcionDAO implements RecepcionRepository {
 
     public void insertar(Connection conexion, Recepcion recepcion) throws SQLException {
         String sql = """

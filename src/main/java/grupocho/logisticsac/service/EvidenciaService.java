@@ -3,15 +3,17 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.EvidenciaDAO;
 import grupocho.logisticsac.modelo.Evidencia;
+import grupocho.logisticsac.repository.EvidenciaRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class EvidenciaService {
 
-    private final EvidenciaDAO evidenciaDAO;
+    private final EvidenciaRepository evidenciaRepository;
 
-    public EvidenciaService() {
-        this.evidenciaDAO = new EvidenciaDAO();
+    public EvidenciaService(EvidenciaRepository evidenciaRepository) {
+        this.evidenciaRepository = evidenciaRepository;
     }
 
     public void registrar(Evidencia evidencia) throws SQLException {
@@ -24,7 +26,7 @@ public class EvidenciaService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            evidenciaDAO.insertar(conexion, evidencia);
+            evidenciaRepository.insertar(conexion, evidencia);
             conexion.commit();
 
         } catch (SQLException e) {

@@ -5,18 +5,22 @@ import grupocho.logisticsac.dao.RecepcionDAO;
 import grupocho.logisticsac.dao.TrasladoDAO;
 import grupocho.logisticsac.enums.EstadoTraslado;
 import grupocho.logisticsac.modelo.Recepcion;
+import grupocho.logisticsac.repository.RecepcionRepository;
+import grupocho.logisticsac.repository.TrasladoRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class RecepcionService {
 
-    private final RecepcionDAO recepcionDAO;
-    private final TrasladoDAO trasladoDAO;
+    private final RecepcionRepository recepcionRepository;
+    private final TrasladoRepository trasladoRepository;
 
-    public RecepcionService() {
-        this.recepcionDAO = new RecepcionDAO();
-        this.trasladoDAO = new TrasladoDAO();
+    public RecepcionService(
+            RecepcionRepository recepcionRepository,
+            TrasladoRepository trasladoRepository) {
+        this.recepcionRepository = recepcionRepository;
+        this.trasladoRepository = trasladoRepository;
     }
 
     public void registrar(Recepcion recepcion) throws SQLException {
@@ -40,8 +44,8 @@ public class RecepcionService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            recepcionDAO.insertar(conexion, recepcion);
-            trasladoDAO.actualizarEstado(conexion, recepcion.getTraslado());
+            recepcionRepository.insertar(conexion, recepcion);
+            trasladoRepository.actualizarEstado(conexion, recepcion.getTraslado());
             conexion.commit();
 
         } catch (SQLException e) {

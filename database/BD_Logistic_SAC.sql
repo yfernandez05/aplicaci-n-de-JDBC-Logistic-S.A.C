@@ -373,3 +373,83 @@ CREATE INDEX idx_inspeccion_vigilante
 
 CREATE INDEX idx_documento_vencimiento
     ON documento(fecha_vencimiento);
+    
+-- insert into    
+INSERT INTO usuario (username, password_hash, nombre_completo, rol, activo) VALUES
+('admin', 'admin123', 'Administrador del Sistema', 'ADMINISTRADOR', TRUE),
+('despachador', 'desp123', 'Luis Mendoza', 'DESPACHADOR', TRUE),
+('vigilante', 'vig123', 'Carlos Torres', 'VIGILANTE', TRUE),
+('jefe', 'jefe123', 'Jorge Ramirez', 'JEFE_SEGURIDAD', TRUE);
+
+INSERT INTO almacen (codigo, nombre, direccion, activo) VALUES
+('ALM001', 'Almacén Principal', 'Av. Argentina 1200 - Callao', TRUE),
+('ALM002', 'Almacén Callao', 'Av. Nestor Gambetta 850 - Callao', TRUE),
+('ALM003', 'Almacén Lurín', 'Av. Industrial 450 - Lurín', TRUE);
+
+INSERT INTO producto (codigo, descripcion, unidad_medida, activo) VALUES
+('PROD001', 'Laptop', 'UNIDAD', TRUE),
+('PROD002', 'Monitor', 'UNIDAD', TRUE),
+('PROD003', 'Teclado', 'UNIDAD', TRUE),
+('PROD004', 'Impresora', 'UNIDAD', TRUE);
+
+INSERT INTO tipo_documento (nombre, ambito, obligatorio, activo) VALUES
+('SOAT', 'VEHICULO', TRUE, TRUE),
+('Tarjeta de propiedad', 'VEHICULO', TRUE, TRUE),
+('Licencia de conducir', 'CONDUCTOR', TRUE, TRUE),
+('Guía de remisión', 'TRASLADO', TRUE, TRUE),
+('Orden de traslado', 'TRASLADO', TRUE, TRUE);
+
+INSERT INTO vehiculo(placa, tipo, capacidad_carga, condicion, estado, activo) VALUES ('ABC-123', 'Camión', 5000.00, 'BUENO', 'DISPONIBLE', TRUE),
+('XYZ-456', 'Camión', 8000.00, 'BUENO', 'DISPONIBLE', TRUE),
+('LMN-789', 'Camioneta', 1500.00, 'BUENO', 'DISPONIBLE', TRUE);
+
+INSERT INTO camion (id_vehiculo, numero_ejes) VALUES (1, 2), (2, 3);
+
+INSERT INTO conductor (dni, nombres, numero_licencia, categoria_licencia, activo)
+VALUES ('12345678', 'Juan Perez', 'LIC001', 'AIII-B', TRUE),
+('87654321', 'Carlos Ramirez', 'LIC002', 'AIII-C', TRUE),
+('45678912', 'Miguel Torres', 'LIC003', 'AII-B', TRUE);
+
+INSERT INTO documento (numero, fecha_emision, fecha_vencimiento, estado, observacion, id_tipo_documento)
+VALUES ('SOAT-001', '2026-01-10', '2027-01-10', 'VIGENTE', NULL, 1),
+('TP-001', '2025-05-10', '2027-05-10', 'VIGENTE', NULL, 2),
+('LIC-001', '2025-03-15', '2027-03-15', 'VIGENTE', NULL, 3),
+('GR-001', '2026-10-01', '2026-10-10', 'VIGENTE', NULL, 4),
+('OT-001', '2026-10-01', '2026-10-10', 'VIGENTE', NULL, 5);
+
+INSERT INTO vehiculo_documento (id_vehiculo, id_documento) VALUES (1, 1), (1, 2);
+
+INSERT INTO conductor_documento (id_conductor, id_documento) VALUES (1, 3);
+
+INSERT INTO traslado (codigo, fecha_programada, id_almacen_origen, id_almacen_destino, id_vehiculo, id_conductor, estado, observacion)
+VALUES ('TR-TEST-001', '2026-10-05', 1, 2, 1, 1, 'PROGRAMADO', NULL),
+('TR-TEST-002', '2026-10-06', 2, 3, 2, 2, 'PROGRAMADO', NULL),
+('TR-TEST-003', '2026-10-04', 1, 3, 1, 1, 'EN_TRANSITO', NULL),
+('TR-TEST-004', '2026-10-04', 2, 1, 2, 2, 'RECHAZADO', 'Documentación incompleta'),
+('TR-TEST-005', '2026-10-03', 3, 1, 1, 1, 'RECIBIDO', NULL),
+('TR-TEST-006', '2026-10-03', 1, 2, 2, 2, 'RECIBIDO_CON_OBSERVACIONES', 'Precinto no conforme');
+
+INSERT INTO detalle_traslado (id_traslado, id_producto, cantidad) VALUES (1, 1, 10), (1, 2, 20), (2, 3, 30), (2, 4, 5), (3, 1, 15), (4, 2, 10), (5, 3, 20), (6, 4, 8);
+
+
+INSERT INTO traslado_documento (id_traslado, id_documento) VALUES (1, 4), (1, 5), (2, 4), (2, 5), (3, 4), (3, 5), (4, 4), (5, 4),(6, 4);
+
+INSERT INTO inspeccion (fecha_hora, resultado, carga_conforme, observacion,  id_traslado, id_vigilante)
+VALUES ('2026-10-04 08:30:00', 'CONFORME', TRUE, NULL, 3, 3),
+('2026-10-04 09:00:00', 'NO_CONFORME', FALSE, 'Carga no coincide con la documentación', 4, 3),
+('2026-10-03 10:00:00', 'CONFORME', TRUE, NULL, 5, 3),
+('2026-10-03 11:00:00', 'CONFORME', TRUE, NULL, 6, 3);
+
+INSERT INTO evidencia (ruta_archivo, descripcion, fecha_hora, id_inspeccion)
+VALUES ('evidencia/tr-test-003.jpg', 'Carga verificada antes de salida', '2026-10-04 08:35:00', 1),
+('evidencia/tr-test-005.jpg', 'Vehículo inspeccionado', '2026-10-03 10:05:00', 3),
+('evidencia/tr-test-006.jpg', 'Carga inspeccionada', '2026-10-03 11:05:00', 4);
+
+INSERT INTO precinto (numero, fecha_registro, estado, id_traslado)
+VALUES ('PRE-001', '2026-10-04 08:40:00', 'COLOCADO', 3),
+('PRE-002', '2026-10-03 10:10:00', 'COLOCADO', 5),
+('PRE-003', '2026-10-03 11:10:00', 'COLOCADO', 6);
+
+INSERT INTO recepcion (fecha_hora_llegada, precinto_conforme, carga_conforme, observacion, id_traslado, id_despachador)
+VALUES ('2026-10-04 16:30:00', TRUE, TRUE, NULL, 5, 2),
+('2026-10-04 17:00:00', FALSE, TRUE, 'El número de precinto no coincide con el registrado.', 6, 2);

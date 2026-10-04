@@ -3,13 +3,15 @@ package grupocho.logisticsac.dao;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.enums.Rol;
 import grupocho.logisticsac.modelo.Usuario;
+import grupocho.logisticsac.repository.UsuarioRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-public class UsuarioDAO {
+public class UsuarioDAO implements UsuarioRepository{
 
     public void insertar(Connection conn, Usuario usuario) throws SQLException {
 
@@ -55,5 +57,42 @@ public class UsuarioDAO {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean autenticar(Connection conexion, String username, String password) throws SQLException {
+        String sql = "SELECT password_hash, activo FROM usuario WHERE username = ?";
+        try (PreparedStatement statement = conexion.prepareStatement(sql)) {
+            statement.setString(1, username);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String passwordHash = resultSet.getString("password_hash");
+                    boolean activo = resultSet.getBoolean("activo");
+                    return activo && passwordHash.equals(password);
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<Usuario> listar(Connection conexion) throws SQLException {
+        String sql = "SELECT id_usuario, username, password_hash, nombre_completo, rol, activo FROM usuario ORDER BY id_usuario";
+        List<Usuario> usuarios = new java.util.ArrayList<>();
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                usuarios.add(new Usuario(
+                        rs.getInt("id_usuario"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
+                        rs.getString("nombre_completo"),
+                        Rol.valueOf(rs.getString("rol")),
+                        rs.getBoolean("activo")
+                ));
+            }
+        }
+        return usuarios;
     }
 }

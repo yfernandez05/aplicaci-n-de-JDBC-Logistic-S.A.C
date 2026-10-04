@@ -3,14 +3,16 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.DocumentoDAO;
 import grupocho.logisticsac.modelo.Documento;
+import grupocho.logisticsac.repository.DocumentoRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DocumentoService {
-    private final DocumentoDAO documentoDAO;
+    private final DocumentoRepository documentoRepository;
 
-    public DocumentoService() {
-        this.documentoDAO = new DocumentoDAO();
+    public DocumentoService(DocumentoRepository documentoRepository) {
+        this.documentoRepository = documentoRepository;
     }
 
     public void registrar(Documento documento) throws SQLException {
@@ -24,7 +26,7 @@ public class DocumentoService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            documentoDAO.insertar(conexion, documento);
+            documentoRepository.insertar(conexion, documento);
             conexion.commit();
         } catch (SQLException e) {
 
@@ -53,7 +55,7 @@ public class DocumentoService {
         }
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-            return documentoDAO.buscarPorNumero(conexion,numero);
+            return documentoRepository.buscarPorNumero(conexion,numero);
         }
 
     }

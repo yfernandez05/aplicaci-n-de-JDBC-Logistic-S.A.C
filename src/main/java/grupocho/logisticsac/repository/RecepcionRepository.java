@@ -1,4 +1,9 @@
 package grupocho.logisticsac.repository;
 
-public class RecepcionRepository {
+import grupocho.logisticsac.modelo.Recepcion;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public interface RecepcionRepository {
+    void insertar(Connection conexion, Recepcion recepcion) throws SQLException;
 }

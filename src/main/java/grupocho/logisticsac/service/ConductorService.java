@@ -3,14 +3,17 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.ConductorDAO;
 import grupocho.logisticsac.modelo.Conductor;
+import grupocho.logisticsac.repository.ConductorRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ConductorService {
-    private final ConductorDAO conductorDAO;
+    private final ConductorRepository conductorRepository;
 
-    public ConductorService() {
-        this.conductorDAO = new ConductorDAO();
+    public ConductorService(ConductorRepository conductorRepository) {
+        this.conductorRepository = conductorRepository;
     }
 
     public void registrar(Conductor conductor) throws SQLException {
@@ -24,7 +27,7 @@ public class ConductorService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            conductorDAO.insertar(conexion, conductor);
+            conductorRepository.insertar(conexion, conductor);
             conexion.commit();
         } catch (SQLException e) {
 
@@ -52,7 +55,31 @@ public class ConductorService {
         }
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-            return conductorDAO.buscarPorDni(conexion, dni);
+            return conductorRepository.buscarPorDni(conexion, dni);
+        }
+    }
+
+    public List<Conductor> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return conductorRepository.listar(conexion);
+        }
+    }
+
+    public void actualizar(Conductor conductor) throws SQLException {
+        if (conductor == null || !conductor.validar()) {
+            throw new IllegalArgumentException("Los datos del conductor no son válidos.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            conductorRepository.actualizar(conexion, conductor);
+        }
+    }
+
+    public void eliminar(int idConductor) throws SQLException {
+        if (idConductor <= 0) {
+            throw new IllegalArgumentException("El conductor seleccionado no es válido.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            conductorRepository.eliminar(conexion, idConductor);
         }
     }
 }

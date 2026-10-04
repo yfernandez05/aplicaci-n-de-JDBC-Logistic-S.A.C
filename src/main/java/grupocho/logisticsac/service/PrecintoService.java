@@ -3,15 +3,17 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.PrecintoDAO;
 import grupocho.logisticsac.modelo.Precinto;
+import grupocho.logisticsac.repository.PrecintoRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class PrecintoService {
 
-    private final PrecintoDAO precintoDAO;
+    private final PrecintoRepository precintoRepository;
 
-    public PrecintoService() {
-        this.precintoDAO = new PrecintoDAO();
+    public PrecintoService(PrecintoRepository precintoRepository) {
+        this.precintoRepository = precintoRepository;
     }
 
     public void registrar(Precinto precinto) throws SQLException {
@@ -24,7 +26,7 @@ public class PrecintoService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            precintoDAO.insertar(conexion, precinto);
+            precintoRepository.insertar(conexion, precinto);
             conexion.commit();
 
         } catch (SQLException e) {

@@ -3,16 +3,18 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.UsuarioDAO;
 import grupocho.logisticsac.modelo.Usuario;
+import grupocho.logisticsac.repository.UsuarioRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UsuarioService {
 
-    private final UsuarioDAO usuarioDAO;
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService() {
-        this.usuarioDAO = new UsuarioDAO();
+    public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
     public void registrar(Usuario usuario) throws SQLException {
@@ -30,7 +32,7 @@ public class UsuarioService {
             conexion.setAutoCommit(false);
 
             // Insert Base de datos
-            usuarioDAO.insertar(conexion, usuario);
+            usuarioRepository.insertar(conexion, usuario);
 
             // confirmaos commit
             conexion.commit();
@@ -55,7 +57,25 @@ public class UsuarioService {
             throw new IllegalArgumentException( "El username es obligatorio." );
         }
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-            return usuarioDAO.buscarPorUsername(conexion, username);
+            return usuarioRepository.buscarPorUsername(conexion, username);
+        }
+    }
+
+    public boolean autenticar(String username, String password) throws SQLException {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("El username es obligatorio.");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return usuarioRepository.autenticar(conexion, username, password);
+        }
+    }
+
+    public List<Usuario> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return usuarioRepository.listar(conexion);
         }
     }
 }

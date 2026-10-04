@@ -3,14 +3,17 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.ProductoDAO;
 import grupocho.logisticsac.modelo.Producto;
+import grupocho.logisticsac.repository.ProductoRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ProductoService {
-    private final ProductoDAO productoDAO;
+    private final ProductoRepository productoRepository;
 
-    public ProductoService() {
-        this.productoDAO = new ProductoDAO();
+    public ProductoService(ProductoRepository productoRepository) {
+        this.productoRepository = productoRepository;
     }
 
     public void registrar(Producto producto) throws SQLException {
@@ -24,7 +27,7 @@ public class ProductoService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            productoDAO.insertar(conexion, producto);
+            productoRepository.insertar(conexion, producto);
             conexion.commit();
 
         } catch (SQLException e) {
@@ -54,7 +57,33 @@ public class ProductoService {
         }
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-            return productoDAO.buscarPorCodigo(conexion, codigo);
+            return productoRepository.buscarPorCodigo(conexion, codigo);
+        }
+    }
+
+    public List<Producto> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return productoRepository.listar(conexion);
+        }
+    }
+
+    public void actualizar(Producto producto) throws SQLException {
+        if (producto == null || !producto.validar()) {
+            throw new IllegalArgumentException("Los datos del producto no son válidos.");
+        }
+
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            productoRepository.actualizar(conexion, producto);
+        }
+    }
+
+    public void eliminar(int idProducto) throws SQLException {
+        if (idProducto <= 0) {
+            throw new IllegalArgumentException("El producto seleccionado no es válido.");
+        }
+
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            productoRepository.eliminar(conexion, idProducto);
         }
     }
 }

@@ -3,15 +3,18 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.VehiculoDAO;
 import grupocho.logisticsac.modelo.Vehiculo;
+import grupocho.logisticsac.repository.VehiculoRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class VehiculoService {
 
-    private final VehiculoDAO vehiculoDAO;
+    private final VehiculoRepository vehiculoRepository;
 
-    public VehiculoService() {
-        this.vehiculoDAO = new VehiculoDAO();
+    public VehiculoService(VehiculoRepository vehiculoRepository) {
+        this.vehiculoRepository = vehiculoRepository;
     }
 
     public void registrar(Vehiculo vehiculo) throws SQLException {
@@ -25,7 +28,7 @@ public class VehiculoService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            vehiculoDAO.insertar(conexion, vehiculo);
+            vehiculoRepository.insertar(conexion, vehiculo);
             conexion.commit();
 
         } catch (SQLException e) {
@@ -55,7 +58,31 @@ public class VehiculoService {
         }
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-            return vehiculoDAO.buscarPorPlaca(conexion, placa);
+            return vehiculoRepository.buscarPorPlaca(conexion, placa);
+        }
+    }
+
+    public List<Vehiculo> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return vehiculoRepository.listar(conexion);
+        }
+    }
+
+    public void actualizar(Vehiculo vehiculo) throws SQLException {
+        if (vehiculo == null || !vehiculo.validar()) {
+            throw new IllegalArgumentException("Los datos del vehículo no son válidos.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            vehiculoRepository.actualizar(conexion, vehiculo);
+        }
+    }
+
+    public void eliminar(int idVehiculo) throws SQLException {
+        if (idVehiculo <= 0) {
+            throw new IllegalArgumentException("El vehículo seleccionado no es válido.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            vehiculoRepository.eliminar(conexion, idVehiculo);
         }
     }
 }

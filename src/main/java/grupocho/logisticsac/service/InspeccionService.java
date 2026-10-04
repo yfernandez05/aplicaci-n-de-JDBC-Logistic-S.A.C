@@ -3,15 +3,17 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.InspeccionDAO;
 import grupocho.logisticsac.modelo.Inspeccion;
+import grupocho.logisticsac.repository.InspeccionRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class InspeccionService {
 
-    private final InspeccionDAO inspeccionDAO;
+    private final InspeccionRepository inspeccionRepository;
 
-    public InspeccionService() {
-        this.inspeccionDAO = new InspeccionDAO();
+    public InspeccionService(InspeccionRepository inspeccionRepository) {
+        this.inspeccionRepository = inspeccionRepository;
     }
 
     public void registrar(Inspeccion inspeccion) throws SQLException {
@@ -25,7 +27,7 @@ public class InspeccionService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            inspeccionDAO.insertar(conexion,inspeccion);
+            inspeccionRepository.insertar(conexion,inspeccion);
             conexion.commit();
         } catch (SQLException e) {
 

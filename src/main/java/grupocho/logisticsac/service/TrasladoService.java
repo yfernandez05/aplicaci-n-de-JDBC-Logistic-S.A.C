@@ -6,16 +6,18 @@ import grupocho.logisticsac.enums.EstadoTraslado;
 import grupocho.logisticsac.modelo.Inspeccion;
 import grupocho.logisticsac.modelo.Traslado;
 import grupocho.logisticsac.modelo.Usuario;
+import grupocho.logisticsac.repository.TrasladoRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class TrasladoService {
 
-    private final TrasladoDAO trasladoDAO;
+    private final TrasladoRepository trasladoRepository;
 
-    public TrasladoService() {
-        this.trasladoDAO = new TrasladoDAO();
+    public TrasladoService(TrasladoRepository trasladoRepository) {
+        this.trasladoRepository = trasladoRepository;
     }
 
     public void registrar(Traslado traslado) throws SQLException {
@@ -29,7 +31,7 @@ public class TrasladoService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            trasladoDAO.insertar(conexion,traslado);
+            trasladoRepository.insertar(conexion,traslado);
             conexion.commit();
         } catch (SQLException e) {
             if (conexion != null) {
@@ -81,7 +83,7 @@ public class TrasladoService {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
 
-            trasladoDAO.actualizarEstado(conexion, traslado);
+            trasladoRepository.actualizarEstado(conexion, traslado);
 
             conexion.commit();
 
@@ -125,7 +127,7 @@ public class TrasladoService {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
 
-            trasladoDAO.actualizarEstado(conexion, traslado);
+            trasladoRepository.actualizarEstado(conexion, traslado);
 
             conexion.commit();
 
@@ -145,6 +147,33 @@ public class TrasladoService {
                 conexion.setAutoCommit(true);
                 conexion.close();
             }
+        }
+    }
+
+    public List<Traslado> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return trasladoRepository.listar(conexion);
+        }
+    }
+
+    public List<Traslado> buscar(
+            String codigo,
+            java.time.LocalDate fecha,
+            EstadoTraslado estado,
+            Integer idVehiculo,
+            Integer idConductor,
+            Integer idAlmacen
+    ) throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return trasladoRepository.buscar(
+                    conexion,
+                    codigo,
+                    fecha,
+                    estado,
+                    idVehiculo,
+                    idConductor,
+                    idAlmacen
+            );
         }
     }
 }

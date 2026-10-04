@@ -1,12 +1,14 @@
 package grupocho.logisticsac.dao;
 
 import grupocho.logisticsac.modelo.Precinto;
+import grupocho.logisticsac.repository.PrecintoRepository;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class PrecintoDAO {
+public class PrecintoDAO implements PrecintoRepository {
 
     public void insertar(Connection conexion, Precinto precinto) throws SQLException {
         String sql = """

@@ -3,14 +3,18 @@ package grupocho.logisticsac.service;
 import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.AlmacenDAO;
 import grupocho.logisticsac.modelo.Almacen;
+import grupocho.logisticsac.repository.AlmacenRepository;
+import grupocho.logisticsac.repository.UsuarioRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AlmacenService {
-    private final AlmacenDAO almacenDAO;
+    private final AlmacenRepository almacenRepository;
 
-    public AlmacenService() {
-        this.almacenDAO = new AlmacenDAO();
+    public AlmacenService(AlmacenRepository almacenRepository) {
+        this.almacenRepository = almacenRepository;
     }
 
     public void registrar(Almacen almacen) throws SQLException {
@@ -26,7 +30,7 @@ public class AlmacenService {
 
             conexion.setAutoCommit(false);
 
-            almacenDAO.insertar(conexion, almacen);
+            almacenRepository.insertar(conexion, almacen);
 
             conexion.commit();
 
@@ -57,7 +61,31 @@ public class AlmacenService {
         }
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-            return almacenDAO.buscarPorCodigo(conexion, codigo);
+            return almacenRepository.buscarPorCodigo(conexion, codigo);
+        }
+    }
+
+    public List<Almacen> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return almacenRepository.listar(conexion);
+        }
+    }
+
+    public void actualizar(Almacen almacen) throws SQLException {
+        if (almacen == null || !almacen.validar()) {
+            throw new IllegalArgumentException("Los datos del almacén no son válidos.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            almacenRepository.actualizar(conexion, almacen);
+        }
+    }
+
+    public void eliminar(int idAlmacen) throws SQLException {
+        if (idAlmacen <= 0) {
+            throw new IllegalArgumentException("El almacén seleccionado no es válido.");
+        }
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            almacenRepository.eliminar(conexion, idAlmacen);
         }
     }
 }
