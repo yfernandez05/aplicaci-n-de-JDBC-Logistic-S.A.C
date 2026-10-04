@@ -1,23 +1,22 @@
 package grupocho.logisticsac.service;
 
 import grupocho.logisticsac.config.ConexionDB;
-import grupocho.logisticsac.dao.InspeccionDAO;
-import grupocho.logisticsac.modelo.Inspeccion;
+import grupocho.logisticsac.dao.PrecintoDAO;
+import grupocho.logisticsac.modelo.Precinto;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class InspeccionService {
+public class PrecintoService {
 
-    private final InspeccionDAO inspeccionDAO;
+    private final PrecintoDAO precintoDAO;
 
-    public InspeccionService() {
-        this.inspeccionDAO = new InspeccionDAO();
+    public PrecintoService() {
+        this.precintoDAO = new PrecintoDAO();
     }
 
-    public void registrar(Inspeccion inspeccion) throws SQLException {
-
-        if (inspeccion == null || !inspeccion.validar()) {
-            throw new IllegalArgumentException("Los datos de la inspección no son válidos.");
+    public void registrar(Precinto precinto) throws SQLException {
+        if (precinto == null || !precinto.validar()) {
+            throw new IllegalArgumentException("Los datos del precinto no son válidos.");
         }
 
         Connection conexion = null;
@@ -25,8 +24,9 @@ public class InspeccionService {
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-            inspeccionDAO.insertar(conexion,inspeccion);
+            precintoDAO.insertar(conexion, precinto);
             conexion.commit();
+
         } catch (SQLException e) {
 
             if (conexion != null) {
@@ -36,7 +36,6 @@ public class InspeccionService {
                     e.addSuppressed(rollbackException);
                 }
             }
-
             throw e;
 
         } finally {

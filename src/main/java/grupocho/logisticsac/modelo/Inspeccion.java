@@ -17,6 +17,7 @@ public class Inspeccion {
     private List<Evidencia> evidencias;
 
     public Inspeccion() {
+        this.fechaHora = LocalDateTime.now();
         this.evidencias = new ArrayList<>();
     }
 
