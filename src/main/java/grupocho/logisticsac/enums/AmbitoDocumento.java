@@ -1,4 +1,7 @@
 package grupocho.logisticsac.enums;
 
-public class AmbitoDocumento {
+public enum AmbitoDocumento {
+    VEHICULO,
+    CONDUCTOR,
+    TRASLADO
 }

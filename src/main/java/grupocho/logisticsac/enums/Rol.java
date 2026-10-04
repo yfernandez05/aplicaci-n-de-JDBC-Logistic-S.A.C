@@ -1,4 +1,8 @@
 package grupocho.logisticsac.enums;
 
-public class Rol {
+public enum Rol {
+    ADMINISTRADOR,
+    DESPACHADOR,
+    VIGILANTE,
+    JEFE_SEGURIDAD
 }

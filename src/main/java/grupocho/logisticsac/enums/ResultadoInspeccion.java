@@ -1,4 +1,6 @@
 package grupocho.logisticsac.enums;
 
-public class ResultadoInspeccion {
+public enum ResultadoInspeccion {
+    CONFORME,
+    NO_CONFORME
 }
