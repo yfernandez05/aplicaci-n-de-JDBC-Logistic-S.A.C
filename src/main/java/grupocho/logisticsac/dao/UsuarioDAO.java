@@ -29,8 +29,7 @@ public class UsuarioDAO {
         }
     }
 
-    public Usuario buscarPorUsername(Connection conn, String username)
-            throws SQLException {
+    public Usuario buscarPorUsername(Connection conn, String username) throws SQLException {
 
         String sql = """
             SELECT id_usuario, username, password_hash, nombre_completo, rol, activo
@@ -44,12 +43,12 @@ public class UsuarioDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Usuario(
-                            rs.getInt("id_usuario"),
-                            rs.getString("username"),
-                            rs.getString("password_hash"),
-                            rs.getString("nombre_completo"),
-                            Rol.valueOf(rs.getString("rol")),
-                            rs.getBoolean("activo")
+                        rs.getInt("id_usuario"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
+                        rs.getString("nombre_completo"),
+                        Rol.valueOf(rs.getString("rol")),
+                        rs.getBoolean("activo")
                     );
                 }
             }
