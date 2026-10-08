@@ -27,14 +27,6 @@ public class Conductor {
         this.categoriaLicencia = categoriaLicencia;
         this.activo = activo;
     }
-
-    public boolean validarDni() {
-        return dni != null && !dni.isBlank();
-    }
-    public boolean validar() {
-        return validarDni() && nombres != null && !nombres.isBlank() && numeroLicencia != null && !numeroLicencia.isBlank()
-                && categoriaLicencia != null && !categoriaLicencia.isBlank();
-    }
     public int getIdConductor() {
         return idConductor;
     }

@@ -27,10 +27,6 @@ public class Evidencia {
         this.inspeccion = inspeccion;
     }
 
-    public boolean validar() {
-        return rutaArchivo != null && !rutaArchivo.isBlank() && inspeccion != null;
-    }
-
     public int getIdEvidencia() {
         return idEvidencia;
     }

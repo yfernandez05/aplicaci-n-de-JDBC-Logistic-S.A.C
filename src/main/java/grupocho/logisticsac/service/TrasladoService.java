@@ -7,6 +7,7 @@ import grupocho.logisticsac.modelo.Inspeccion;
 import grupocho.logisticsac.modelo.Traslado;
 import grupocho.logisticsac.modelo.Usuario;
 import grupocho.logisticsac.repository.TrasladoRepository;
+import grupocho.logisticsac.validation.TrasladoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,17 +16,16 @@ import java.util.List;
 public class TrasladoService {
 
     private final TrasladoRepository trasladoRepository;
+    private final TrasladoValidator trasladoValidator;
 
     public TrasladoService(TrasladoRepository trasladoRepository) {
         this.trasladoRepository = trasladoRepository;
+        this.trasladoValidator = new TrasladoValidator();
     }
 
     public void registrar(Traslado traslado) throws SQLException {
 
-        if (traslado == null || !traslado.validar()) {
-            throw new IllegalArgumentException("Los datos del traslado no son válidos.");
-        }
-
+        trasladoValidator.validar(traslado);
         Connection conexion = null;
 
         try {
@@ -53,38 +53,15 @@ public class TrasladoService {
     }
 
     public void autorizarSalida(Traslado traslado, Usuario responsable, Inspeccion inspeccion) throws SQLException {
-        if (traslado == null) {
-            throw new IllegalArgumentException("El traslado no puede ser nulo.");
-        }
 
-        if (responsable == null) {
-            throw new IllegalArgumentException("El responsable de salida es obligatorio.");
-        }
-
-        if (inspeccion == null) {
-            throw new IllegalArgumentException("La inspección es obligatoria para autorizar la salida.");
-        }
-
-        if (traslado.getEstado() != EstadoTraslado.PROGRAMADO) {
-            throw new IllegalStateException("Solo se puede autorizar un traslado PROGRAMADO.");
-        }
-
-        if (!inspeccion.puedeAutorizar()) {
-            throw new IllegalStateException(
-                    "El traslado no puede ser autorizado porque la inspección no es conforme."
-            );
-        }
-
+        trasladoValidator.validarAutorizacion(traslado, responsable, inspeccion);
         traslado.marcarEnTransito(responsable);
-
         Connection conexion = null;
 
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-
             trasladoRepository.actualizarEstado(conexion, traslado);
-
             conexion.commit();
 
         } catch (SQLException e) {
@@ -107,28 +84,15 @@ public class TrasladoService {
     }
 
     public void rechazar(Traslado traslado, String motivo) throws SQLException {
-        if (traslado == null) {
-            throw new IllegalArgumentException("El traslado no puede ser nulo.");
-        }
 
-        if (motivo == null || motivo.isBlank()) {
-            throw new IllegalArgumentException("El motivo de rechazo es obligatorio.");
-        }
-
-        if (traslado.getEstado() != EstadoTraslado.PROGRAMADO) {
-            throw new IllegalStateException("Solo se puede rechazar un traslado PROGRAMADO.");
-        }
-
+        trasladoValidator.validarRechazo(traslado, motivo);
         traslado.rechazar(motivo);
-
         Connection conexion = null;
 
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
-
             trasladoRepository.actualizarEstado(conexion, traslado);
-
             conexion.commit();
 
         } catch (SQLException e) {

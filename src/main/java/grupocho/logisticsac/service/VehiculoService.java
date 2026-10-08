@@ -1,9 +1,9 @@
 package grupocho.logisticsac.service;
 
 import grupocho.logisticsac.config.ConexionDB;
-import grupocho.logisticsac.dao.VehiculoDAO;
 import grupocho.logisticsac.modelo.Vehiculo;
 import grupocho.logisticsac.repository.VehiculoRepository;
+import grupocho.logisticsac.validation.VehiculoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,19 +12,16 @@ import java.util.List;
 public class VehiculoService {
 
     private final VehiculoRepository vehiculoRepository;
+    private final VehiculoValidator vehiculoValidator;
 
     public VehiculoService(VehiculoRepository vehiculoRepository) {
         this.vehiculoRepository = vehiculoRepository;
+        this.vehiculoValidator = new VehiculoValidator();
     }
 
     public void registrar(Vehiculo vehiculo) throws SQLException {
-
-        if (vehiculo == null || !vehiculo.validar()) {
-            throw new IllegalArgumentException("Los datos del vehículo no son válidos.");
-        }
-
+        vehiculoValidator.validar(vehiculo);
         Connection conexion = null;
-
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
@@ -69,9 +66,7 @@ public class VehiculoService {
     }
 
     public void actualizar(Vehiculo vehiculo) throws SQLException {
-        if (vehiculo == null || !vehiculo.validar()) {
-            throw new IllegalArgumentException("Los datos del vehículo no son válidos.");
-        }
+        vehiculoValidator.validar(vehiculo);
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             vehiculoRepository.actualizar(conexion, vehiculo);
         }

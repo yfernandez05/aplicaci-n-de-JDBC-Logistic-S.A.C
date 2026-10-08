@@ -38,12 +38,6 @@ public class Documento {
         return "VENCIDO".equalsIgnoreCase(estado);
     }
 
-    public boolean validar() {
-        return numero != null && !numero.isBlank()
-                && tipoDocumento != null
-                && estado != null && !estado.isBlank();
-    }
-
     public int getIdDocumento() {
         return idDocumento;
     }

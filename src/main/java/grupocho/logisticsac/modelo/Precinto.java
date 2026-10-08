@@ -26,9 +26,6 @@ public class Precinto {
         this.estado = estado;
         this.traslado = traslado;
     }
-    public boolean validar() {
-        return numero != null && !numero.isBlank() && fechaColocacion != null && traslado != null;
-    }
 
     public int getIdPrecinto() {
         return idPrecinto;

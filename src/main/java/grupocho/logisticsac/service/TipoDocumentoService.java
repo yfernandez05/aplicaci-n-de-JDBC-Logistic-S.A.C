@@ -4,23 +4,23 @@ import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.TipoDocumentoDAO;
 import grupocho.logisticsac.modelo.TipoDocumento;
 import grupocho.logisticsac.repository.TipoDocumentoRepository;
+import grupocho.logisticsac.validation.TipoDocumentoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class TipoDocumentoService {
     private final TipoDocumentoRepository tipoDocumentoRepository;
+    private final TipoDocumentoValidator tipoDocumentoValidator;
 
     public TipoDocumentoService(TipoDocumentoRepository tipoDocumentoRepository) {
         this.tipoDocumentoRepository = tipoDocumentoRepository;
+        this.tipoDocumentoValidator = new TipoDocumentoValidator();
     }
 
     public void registrar(TipoDocumento tipoDocumento) throws SQLException {
 
-        if (tipoDocumento == null || !tipoDocumento.validar()) {
-            throw new IllegalArgumentException("Los datos del tipo de documento no son válidos.");
-        }
-
+        tipoDocumentoValidator.validar(tipoDocumento);
         Connection conexion = null;
 
         try {
@@ -29,7 +29,6 @@ public class TipoDocumentoService {
             tipoDocumentoRepository.insertar(conexion, tipoDocumento);
             conexion.commit();
         } catch (SQLException e) {
-
             if (conexion != null) {
                 try {
                     conexion.rollback();
@@ -37,9 +36,7 @@ public class TipoDocumentoService {
                     e.addSuppressed(rollbackException);
                 }
             }
-
             throw e;
-
         } finally {
             if (conexion != null) {
                 conexion.setAutoCommit(true);
@@ -48,17 +45,11 @@ public class TipoDocumentoService {
         }
     }
 
-    public TipoDocumento buscarPorNombre(String nombre)
-            throws SQLException {
+    public TipoDocumento buscarPorNombre(String nombre) throws SQLException {
 
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException(
-                    "El nombre del tipo de documento es obligatorio."
-            );
-        }
+        tipoDocumentoValidator.validarNombre(nombre);
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
-
             return tipoDocumentoRepository.buscarPorNombre(
                     conexion,
                     nombre

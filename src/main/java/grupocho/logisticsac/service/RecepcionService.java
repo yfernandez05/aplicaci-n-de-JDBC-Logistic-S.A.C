@@ -7,6 +7,7 @@ import grupocho.logisticsac.enums.EstadoTraslado;
 import grupocho.logisticsac.modelo.Recepcion;
 import grupocho.logisticsac.repository.RecepcionRepository;
 import grupocho.logisticsac.repository.TrasladoRepository;
+import grupocho.logisticsac.validation.RecepcionValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,30 +16,23 @@ public class RecepcionService {
 
     private final RecepcionRepository recepcionRepository;
     private final TrasladoRepository trasladoRepository;
+    private final RecepcionValidator recepcionValidator;
 
-    public RecepcionService(
-            RecepcionRepository recepcionRepository,
-            TrasladoRepository trasladoRepository) {
+    public RecepcionService( RecepcionRepository recepcionRepository, TrasladoRepository trasladoRepository) {
         this.recepcionRepository = recepcionRepository;
         this.trasladoRepository = trasladoRepository;
+        this.recepcionValidator = new RecepcionValidator();
     }
 
     public void registrar(Recepcion recepcion) throws SQLException {
 
-        if (recepcion == null || !recepcion.validar()) {
-            throw new IllegalArgumentException("Los datos de la recepción no son válidos.");
-        }
-
-        if (recepcion.getTraslado().getEstado() != EstadoTraslado.EN_TRANSITO) {
-            throw new IllegalStateException("Solo se puede registrar la recepción de un traslado EN_TRANSITO.");
-        }
-
+        recepcionValidator.validar(recepcion);
+        recepcionValidator.validarEstadoTraslado(recepcion);
         if (recepcion.tieneObservaciones()) {
             recepcion.getTraslado().setEstado(EstadoTraslado.RECIBIDO_CON_OBSERVACIONES);
         } else {
             recepcion.getTraslado().setEstado(EstadoTraslado.RECIBIDO);
         }
-
         Connection conexion = null;
 
         try {

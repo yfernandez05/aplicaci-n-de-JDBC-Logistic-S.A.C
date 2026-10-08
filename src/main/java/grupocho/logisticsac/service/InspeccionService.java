@@ -4,6 +4,7 @@ import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.InspeccionDAO;
 import grupocho.logisticsac.modelo.Inspeccion;
 import grupocho.logisticsac.repository.InspeccionRepository;
+import grupocho.logisticsac.validation.InspeccionValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,19 +12,16 @@ import java.sql.SQLException;
 public class InspeccionService {
 
     private final InspeccionRepository inspeccionRepository;
+    private final InspeccionValidator inspeccionValidator;
 
     public InspeccionService(InspeccionRepository inspeccionRepository) {
         this.inspeccionRepository = inspeccionRepository;
+        this.inspeccionValidator = new InspeccionValidator();
     }
 
     public void registrar(Inspeccion inspeccion) throws SQLException {
-
-        if (inspeccion == null || !inspeccion.validar()) {
-            throw new IllegalArgumentException("Los datos de la inspección no son válidos.");
-        }
-
+        inspeccionValidator.validar(inspeccion);
         Connection conexion = null;
-
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);

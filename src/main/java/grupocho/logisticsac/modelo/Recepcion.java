@@ -31,16 +31,6 @@ public class Recepcion {
         this.despachador = despachador;
     }
 
-    public boolean validar() {
-        if (traslado == null || despachador == null) {
-            return false;
-        }
-        if ((!precintoConforme || !cargaConforme) && (observacion == null || observacion.isBlank())) {
-            return false;
-        }
-
-        return true;
-    }
     public boolean tieneObservaciones() {
         return !precintoConforme || !cargaConforme;
     }

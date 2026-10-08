@@ -40,7 +40,7 @@ public class Traslado {
     }
 
     public void agregarDetalle(DetalleTraslado detalle) {
-        if (detalle != null && detalle.validar()) {
+        if (detalle != null) {
             detalles.add(detalle);
         }
     }
@@ -48,16 +48,6 @@ public class Traslado {
         return !detalles.isEmpty();
     }
 
-    public boolean validar() {
-        return codigo != null && !codigo.isBlank()
-                && fechaProgramada != null
-                && almacenOrigen != null
-                && almacenDestino != null
-                && almacenOrigen.getIdAlmacen() != almacenDestino.getIdAlmacen()
-                && vehiculo != null
-                && conductor != null
-                && tieneDetalles();
-    }
     public void marcarEnTransito(Usuario responsable) {
         this.estado = EstadoTraslado.EN_TRANSITO;
         this.fechaHoraSalida = LocalDateTime.now();

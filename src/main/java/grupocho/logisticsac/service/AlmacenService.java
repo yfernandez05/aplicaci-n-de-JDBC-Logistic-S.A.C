@@ -5,6 +5,7 @@ import grupocho.logisticsac.dao.AlmacenDAO;
 import grupocho.logisticsac.modelo.Almacen;
 import grupocho.logisticsac.repository.AlmacenRepository;
 import grupocho.logisticsac.repository.UsuarioRepository;
+import grupocho.logisticsac.validation.AlmacenValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,28 +13,23 @@ import java.util.List;
 
 public class AlmacenService {
     private final AlmacenRepository almacenRepository;
+    private final AlmacenValidator almacenValidator;
 
     public AlmacenService(AlmacenRepository almacenRepository) {
         this.almacenRepository = almacenRepository;
+        this.almacenValidator = new AlmacenValidator();
     }
 
     public void registrar(Almacen almacen) throws SQLException {
 
-        if (almacen == null || !almacen.validar()) {
-            throw new IllegalArgumentException("Los datos del almacén no son válidos.");
-        }
-
+        almacenValidator.validar(almacen);
         Connection conexion = null;
 
         try {
             conexion = ConexionDB.obtenerConexion();
-
             conexion.setAutoCommit(false);
-
             almacenRepository.insertar(conexion, almacen);
-
             conexion.commit();
-
         } catch (SQLException e) {
 
             if (conexion != null) {
@@ -72,9 +68,7 @@ public class AlmacenService {
     }
 
     public void actualizar(Almacen almacen) throws SQLException {
-        if (almacen == null || !almacen.validar()) {
-            throw new IllegalArgumentException("Los datos del almacén no son válidos.");
-        }
+        almacenValidator.validar(almacen);
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             almacenRepository.actualizar(conexion, almacen);
         }

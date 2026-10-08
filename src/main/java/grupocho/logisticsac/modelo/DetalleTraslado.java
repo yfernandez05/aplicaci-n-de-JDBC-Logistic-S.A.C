@@ -19,13 +19,6 @@ public class DetalleTraslado {
         this.cantidad = cantidad;
     }
 
-    public boolean validarCantidad() {
-        return cantidad > 0;
-    }
-    public boolean validar() {
-        return producto != null && validarCantidad();
-    }
-
     public int getIdDetalle() {
         return idDetalle;
     }

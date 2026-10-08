@@ -4,6 +4,7 @@ import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.ProductoDAO;
 import grupocho.logisticsac.modelo.Producto;
 import grupocho.logisticsac.repository.ProductoRepository;
+import grupocho.logisticsac.validation.ProductoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,27 +12,21 @@ import java.util.List;
 
 public class ProductoService {
     private final ProductoRepository productoRepository;
-
+    private final ProductoValidator productoValidator;
     public ProductoService(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
+        this.productoValidator = new ProductoValidator();
     }
 
     public void registrar(Producto producto) throws SQLException {
-
-        if (producto == null || !producto.validar()) {
-            throw new IllegalArgumentException( "Los datos del producto no son válidos." );
-        }
-
+        productoValidator.validar(producto);
         Connection conexion = null;
-
         try {
             conexion = ConexionDB.obtenerConexion();
             conexion.setAutoCommit(false);
             productoRepository.insertar(conexion, producto);
             conexion.commit();
-
         } catch (SQLException e) {
-
             if (conexion != null) {
                 try {
                     conexion.rollback();
@@ -39,9 +34,7 @@ public class ProductoService {
                     e.addSuppressed(rollbackException);
                 }
             }
-
             throw e;
-
         } finally {
             if (conexion != null) {
                 conexion.setAutoCommit(true);
@@ -51,11 +44,9 @@ public class ProductoService {
     }
 
     public Producto buscarPorCodigo(String codigo) throws SQLException {
-
         if (codigo == null || codigo.isBlank()) {
-            throw new IllegalArgumentException( "El código del producto es obligatorio.");
+            throw new IllegalArgumentException("El código del producto es obligatorio.");
         }
-
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             return productoRepository.buscarPorCodigo(conexion, codigo);
         }
@@ -68,10 +59,7 @@ public class ProductoService {
     }
 
     public void actualizar(Producto producto) throws SQLException {
-        if (producto == null || !producto.validar()) {
-            throw new IllegalArgumentException("Los datos del producto no son válidos.");
-        }
-
+        productoValidator.validar(producto);
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             productoRepository.actualizar(conexion, producto);
         }
@@ -81,7 +69,6 @@ public class ProductoService {
         if (idProducto <= 0) {
             throw new IllegalArgumentException("El producto seleccionado no es válido.");
         }
-
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             productoRepository.eliminar(conexion, idProducto);
         }

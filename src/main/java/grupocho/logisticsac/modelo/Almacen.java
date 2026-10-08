@@ -25,15 +25,6 @@ public class Almacen {
         this.activo = activo;
     }
 
-    // validacion basica
-    public boolean validarCodigo() {
-        return codigo != null && !codigo.isBlank();
-    }
-
-    public boolean validar() {
-        return validarCodigo() && nombre != null && !nombre.isBlank()
-                && direccion != null && !direccion.isBlank();
-    }
 
     public int getIdAlmacen() {
         return idAlmacen;

@@ -30,17 +30,6 @@ public class Usuario {
         this.activo = activo;
     }
 
-    public boolean tieneRol(Rol rol) {
-        return this.rol == rol;
-    }
-
-    public boolean validar() {
-        return username != null && !username.isBlank()
-                && passwordHash != null && !passwordHash.isBlank()
-                && nombreCompleto != null && !nombreCompleto.isBlank()
-                && rol != null;
-    }
-
     // GET y SET
 
     public int getIdUsuario() {
@@ -65,6 +54,10 @@ public class Usuario {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public boolean tieneRol(Rol rol) {
+        return this.rol == rol;
     }
 
     public String getNombreCompleto() {
