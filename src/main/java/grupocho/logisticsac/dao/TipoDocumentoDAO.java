@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TipoDocumentoDAO implements TipoDocumentoRepository {
 
@@ -54,5 +56,27 @@ public class TipoDocumentoDAO implements TipoDocumentoRepository {
         }
 
         return null;
+    }
+
+    @Override
+    public List<TipoDocumento> listar(Connection conexion) throws SQLException {
+        List<TipoDocumento> lista = new ArrayList<>();
+        String sql = "SELECT id_tipo_documento, nombre, ambito, obligatorio, activo FROM tipo_documento WHERE activo = TRUE ORDER BY ambito, nombre";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(new TipoDocumento(
+                        rs.getInt("id_tipo_documento"),
+                        rs.getString("nombre"),
+                        AmbitoDocumento.valueOf(rs.getString("ambito")),
+                        rs.getBoolean("obligatorio"),
+                        rs.getBoolean("activo")
+                ));
+            }
+        }
+
+        return lista;
     }
 }

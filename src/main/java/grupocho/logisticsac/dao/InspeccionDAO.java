@@ -18,7 +18,7 @@ public class InspeccionDAO implements InspeccionRepository {
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
-        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+        try (PreparedStatement ps = conexion.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setTimestamp( 1, Timestamp.valueOf( inspeccion.getFechaHora()));
             ps.setString(2, inspeccion.getResultado().name());
             ps.setBoolean(3, inspeccion.isCargaConforme());
@@ -26,6 +26,13 @@ public class InspeccionDAO implements InspeccionRepository {
             ps.setInt(5,inspeccion.getTraslado().getIdTraslado());
             ps.setInt(6,inspeccion.getVigilante().getIdUsuario());
             ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (!rs.next()) {
+                    throw new SQLException("No se pudo obtener el ID de la inspección.");
+                }
+                inspeccion.setIdInspeccion(rs.getInt(1));
+            }
         }
     }
 

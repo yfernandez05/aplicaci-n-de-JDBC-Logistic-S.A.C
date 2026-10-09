@@ -1,33 +1,40 @@
 package grupocho.logisticsac.modelo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Precinto {
     private int idPrecinto;
     private String numero;
-    private LocalDate fechaColocacion;
+    private LocalDateTime fechaRegistro;
     private String estado;
     private Traslado traslado;
 
     public Precinto() {
     }
 
-    public Precinto(String numero, LocalDate fechaColocacion, String estado, Traslado traslado) {
+    public Precinto(String numero, Traslado traslado) {
         this.numero = numero;
-        this.fechaColocacion = fechaColocacion;
+        this.traslado = traslado;
+        this.fechaRegistro = LocalDateTime.now();
+        this.estado = "COLOCADO";
+    }
+
+    public Precinto(int idPrecinto, String numero, LocalDateTime fechaRegistro, String estado, Traslado traslado) {
+        this.idPrecinto = idPrecinto;
+        this.numero = numero;
+        this.fechaRegistro = fechaRegistro;
         this.estado = estado;
         this.traslado = traslado;
     }
 
-    public Precinto(int idPrecinto, String numero, LocalDate fechaColocacion, String estado, Traslado traslado) {
-        this.idPrecinto = idPrecinto;
-        this.numero = numero;
-        this.fechaColocacion = fechaColocacion;
-        this.estado = estado;
-        this.traslado = traslado;
-    }
     public boolean validar() {
-        return numero != null && !numero.isBlank() && fechaColocacion != null && traslado != null;
+        return numero != null && !numero.isBlank() && fechaRegistro != null && traslado != null;
+    }
+
+    // compara el numero registrado en garita con el que llega al almacen destino
+    public boolean coincideCon(String numeroRecibido) {
+        return numero != null && numeroRecibido != null
+                && numero.trim().equalsIgnoreCase(numeroRecibido.trim());
     }
 
     public int getIdPrecinto() {
@@ -46,12 +53,12 @@ public class Precinto {
         this.numero = numero;
     }
 
-    public LocalDate getFechaColocacion() {
-        return fechaColocacion;
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
     }
 
-    public void setFechaColocacion(LocalDate fechaColocacion) {
-        this.fechaColocacion = fechaColocacion;
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 
     public String getEstado() {

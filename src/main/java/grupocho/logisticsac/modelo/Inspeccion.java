@@ -55,11 +55,13 @@ public class Inspeccion {
             return false;
         }
 
-        if (!cargaConforme && (observacion == null || observacion.isBlank())) {
+        boolean conforme = resultado == ResultadoInspeccion.CONFORME && cargaConforme;
+
+        if (!conforme && (observacion == null || observacion.isBlank())) {
             return false;
         }
 
-        if (resultado == ResultadoInspeccion.CONFORME && evidencias.isEmpty()) {
+        if (conforme && evidencias.isEmpty()) {
             return false;
         }
 

@@ -26,6 +26,11 @@ public class ConductorService {
 
         try {
             conexion = ConexionDB.obtenerConexion();
+
+            if (conductorRepository.buscarPorDni(conexion, conductor.getDni()) != null) {
+                throw new IllegalArgumentException("El DNI ya existe.");
+            }
+
             conexion.setAutoCommit(false);
             conductorRepository.insertar(conexion, conductor);
             conexion.commit();

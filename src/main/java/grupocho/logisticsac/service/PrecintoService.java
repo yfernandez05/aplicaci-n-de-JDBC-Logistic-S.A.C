@@ -47,4 +47,10 @@ public class PrecintoService {
             }
         }
     }
+
+    public Precinto buscarPorTraslado(int idTraslado) throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return precintoRepository.buscarPorTraslado(conexion, idTraslado);
+        }
+    }
 }

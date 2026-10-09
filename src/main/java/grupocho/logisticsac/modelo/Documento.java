@@ -1,5 +1,7 @@
 package grupocho.logisticsac.modelo;
 
+import java.time.LocalDate;
+
 public class Documento {
     private int idDocumento;
     private String numero;
@@ -38,10 +40,31 @@ public class Documento {
         return "VENCIDO".equalsIgnoreCase(estado);
     }
 
+    public boolean estaObservado() {
+        return "OBSERVADO".equalsIgnoreCase(estado);
+    }
+
+    // marca el documento como VIGENTE o VENCIDO segun la fecha indicada
+    public void actualizarEstado(LocalDate fecha) {
+        if (fechaVencimiento != null && LocalDate.parse(fechaVencimiento).isBefore(fecha)) {
+            this.estado = "VENCIDO";
+        } else {
+            this.estado = "VIGENTE";
+        }
+    }
+
+    public boolean validarFechas() {
+        if (fechaEmision == null || fechaVencimiento == null) {
+            return false;
+        }
+        return !LocalDate.parse(fechaVencimiento).isBefore(LocalDate.parse(fechaEmision));
+    }
+
     public boolean validar() {
         return numero != null && !numero.isBlank()
                 && tipoDocumento != null
-                && estado != null && !estado.isBlank();
+                && estado != null && !estado.isBlank()
+                && validarFechas();
     }
 
     public int getIdDocumento() {
