@@ -4,6 +4,7 @@ import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.PrecintoDAO;
 import grupocho.logisticsac.modelo.Precinto;
 import grupocho.logisticsac.repository.PrecintoRepository;
+import grupocho.logisticsac.validation.PrecintoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,16 +12,16 @@ import java.sql.SQLException;
 public class PrecintoService {
 
     private final PrecintoRepository precintoRepository;
+    private final PrecintoValidator precintoValidator;
 
     public PrecintoService(PrecintoRepository precintoRepository) {
         this.precintoRepository = precintoRepository;
+        this.precintoValidator = new PrecintoValidator();
     }
 
     public void registrar(Precinto precinto) throws SQLException {
-        if (precinto == null || !precinto.validar()) {
-            throw new IllegalArgumentException("Los datos del precinto no son válidos.");
-        }
 
+        precintoValidator.validar(precinto);
         Connection conexion = null;
 
         try {
@@ -28,7 +29,6 @@ public class PrecintoService {
             conexion.setAutoCommit(false);
             precintoRepository.insertar(conexion, precinto);
             conexion.commit();
-
         } catch (SQLException e) {
 
             if (conexion != null) {

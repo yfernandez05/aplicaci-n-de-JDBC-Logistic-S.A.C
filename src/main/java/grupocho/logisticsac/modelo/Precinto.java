@@ -27,10 +27,6 @@ public class Precinto {
         this.traslado = traslado;
     }
 
-    public boolean validar() {
-        return numero != null && !numero.isBlank() && fechaRegistro != null && traslado != null;
-    }
-
     // compara el numero registrado en garita con el que llega al almacen destino
     public boolean coincideCon(String numeroRecibido) {
         return numero != null && numeroRecibido != null

@@ -28,9 +28,6 @@ public class TipoDocumento {
         this.activo = activo;
     }
 
-    public boolean validar() {
-        return nombre != null && !nombre.isBlank() && ambito != null;
-    }
     public int getIdTipoDocumento() {
         return idTipoDocumento;
     }

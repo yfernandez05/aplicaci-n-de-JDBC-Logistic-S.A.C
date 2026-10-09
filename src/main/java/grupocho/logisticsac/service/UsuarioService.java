@@ -4,6 +4,7 @@ import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.UsuarioDAO;
 import grupocho.logisticsac.modelo.Usuario;
 import grupocho.logisticsac.repository.UsuarioRepository;
+import grupocho.logisticsac.validation.UsuarioValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,17 +13,16 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioValidator usuarioValidator;
 
     public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioValidator = new UsuarioValidator();
     }
 
     public void registrar(Usuario usuario) throws SQLException {
 
-        if (usuario == null || !usuario.validar()) {
-            throw new IllegalArgumentException("Los datos del usuario no son válidos.");
-        }
-
+        usuarioValidator.validar(usuario);
         Connection conexion = null;
 
         try {
@@ -62,12 +62,7 @@ public class UsuarioService {
     }
 
     public boolean autenticar(String username, String password) throws SQLException {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("El username es obligatorio.");
-        }
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("La contraseña es obligatoria.");
-        }
+        usuarioValidator.validarCredenciales(username, password);
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             return usuarioRepository.autenticar(conexion, username, password);
         }

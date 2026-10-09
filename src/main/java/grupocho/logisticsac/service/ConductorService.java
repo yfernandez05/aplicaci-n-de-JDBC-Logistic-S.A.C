@@ -4,6 +4,7 @@ import grupocho.logisticsac.config.ConexionDB;
 import grupocho.logisticsac.dao.ConductorDAO;
 import grupocho.logisticsac.modelo.Conductor;
 import grupocho.logisticsac.repository.ConductorRepository;
+import grupocho.logisticsac.validation.ConductorValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,17 +12,15 @@ import java.util.List;
 
 public class ConductorService {
     private final ConductorRepository conductorRepository;
-
+    private final ConductorValidator conductorValidator;
     public ConductorService(ConductorRepository conductorRepository) {
         this.conductorRepository = conductorRepository;
+        this.conductorValidator = new ConductorValidator();
     }
 
     public void registrar(Conductor conductor) throws SQLException {
 
-        if (conductor == null || !conductor.validar()) {
-            throw new IllegalArgumentException("Los datos del conductor no son válidos.");
-        }
-
+        conductorValidator.validar(conductor);
         Connection conexion = null;
 
         try {
@@ -55,10 +54,7 @@ public class ConductorService {
     }
 
     public Conductor buscarPorDni(String dni) throws SQLException {
-        if (dni == null || dni.isBlank()) {
-            throw new IllegalArgumentException("El DNI es obligatorio.");
-        }
-
+        conductorValidator.validarDni(dni);
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             return conductorRepository.buscarPorDni(conexion, dni);
         }
@@ -71,9 +67,7 @@ public class ConductorService {
     }
 
     public void actualizar(Conductor conductor) throws SQLException {
-        if (conductor == null || !conductor.validar()) {
-            throw new IllegalArgumentException("Los datos del conductor no son válidos.");
-        }
+        conductorValidator.validar(conductor);
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             conductorRepository.actualizar(conexion, conductor);
         }

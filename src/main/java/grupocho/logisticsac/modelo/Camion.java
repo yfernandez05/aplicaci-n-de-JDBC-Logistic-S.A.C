@@ -1,6 +1,7 @@
 package grupocho.logisticsac.modelo;
 
 public class Camion extends Vehiculo {
+
     private int numeroEjes;
     public Camion() {
         super();
@@ -14,10 +15,6 @@ public class Camion extends Vehiculo {
     public Camion(int idVehiculo, String placa, String tipo, double capacidadCarga, String condicion, String estado, boolean activo, int numeroEjes) {
         super(idVehiculo, placa, tipo, capacidadCarga, condicion, estado, activo);
         this.numeroEjes = numeroEjes;
-    }
-
-    public boolean validar() {
-        return super.validar() && numeroEjes > 0;
     }
 
     public int getNumeroEjes() {

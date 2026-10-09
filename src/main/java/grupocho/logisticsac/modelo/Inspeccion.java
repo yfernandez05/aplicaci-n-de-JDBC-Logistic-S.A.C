@@ -50,24 +50,6 @@ public class Inspeccion {
         return resultado == ResultadoInspeccion.CONFORME && cargaConforme && !evidencias.isEmpty();
     }
 
-    public boolean validar() {
-        if (traslado == null || vigilante == null || resultado == null) {
-            return false;
-        }
-
-        boolean conforme = resultado == ResultadoInspeccion.CONFORME && cargaConforme;
-
-        if (!conforme && (observacion == null || observacion.isBlank())) {
-            return false;
-        }
-
-        if (conforme && evidencias.isEmpty()) {
-            return false;
-        }
-
-        return true;
-    }
-
     public int getIdInspeccion() {
         return idInspeccion;
     }

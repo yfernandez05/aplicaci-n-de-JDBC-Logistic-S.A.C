@@ -24,15 +24,6 @@ public class Producto {
         this.activo = activo;
     }
 
-    public boolean validarCodigo() {
-        return codigo != null && !codigo.isBlank();
-    }
-
-    public boolean validar() {
-        return validarCodigo()
-                && descripcion != null && !descripcion.isBlank()
-                && unidadMedida != null && !unidadMedida.isBlank();
-    }
     public int getIdProducto() {
         return idProducto;
     }

@@ -7,6 +7,7 @@ import grupocho.logisticsac.modelo.Recepcion;
 import grupocho.logisticsac.repository.PrecintoRepository;
 import grupocho.logisticsac.repository.RecepcionRepository;
 import grupocho.logisticsac.repository.TrasladoRepository;
+import grupocho.logisticsac.validation.RecepcionValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ public class RecepcionService {
     private final RecepcionRepository recepcionRepository;
     private final TrasladoRepository trasladoRepository;
     private final PrecintoRepository precintoRepository;
+    private final RecepcionValidator recepcionValidator;
 
     public RecepcionService(
             RecepcionRepository recepcionRepository,
@@ -24,6 +26,7 @@ public class RecepcionService {
         this.recepcionRepository = recepcionRepository;
         this.trasladoRepository = trasladoRepository;
         this.precintoRepository = precintoRepository;
+        this.recepcionValidator = new RecepcionValidator();
     }
 
     // El numero de precinto recibido se compara con el registrado en garita.
@@ -37,9 +40,7 @@ public class RecepcionService {
             throw new IllegalArgumentException("Ingrese el número de precinto recibido.");
         }
 
-        if (recepcion.getTraslado().getEstado() != EstadoTraslado.EN_TRANSITO) {
-            throw new IllegalStateException("Solo se puede registrar la recepción de un traslado EN_TRANSITO.");
-        }
+        recepcionValidator.validarEstadoTraslado(recepcion);
 
         Connection conexion = null;
 
@@ -49,12 +50,8 @@ public class RecepcionService {
             Precinto precinto = precintoRepository.buscarPorTraslado(conexion, recepcion.getTraslado().getIdTraslado());
             recepcion.setPrecintoConforme(precinto != null && precinto.coincideCon(numeroPrecinto));
 
-            if (!recepcion.validar()) {
-                if (!recepcion.isPrecintoConforme()) {
-                    throw new IllegalArgumentException("El precinto no coincide con el registrado en garita. Describa la incidencia en la observación.");
-                }
-                throw new IllegalArgumentException("La carga no es conforme. Describa la incidencia en la observación.");
-            }
+            // exige la observacion cuando el precinto o la carga no son conformes
+            recepcionValidator.validar(recepcion);
 
             if (recepcion.tieneObservaciones()) {
                 recepcion.getTraslado().setEstado(EstadoTraslado.RECIBIDO_CON_OBSERVACIONES);

@@ -9,6 +9,7 @@ import grupocho.logisticsac.modelo.Traslado;
 import grupocho.logisticsac.modelo.Vehiculo;
 import grupocho.logisticsac.repository.DocumentoRepository;
 import grupocho.logisticsac.repository.TipoDocumentoRepository;
+import grupocho.logisticsac.validation.DocumentoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,10 +20,12 @@ import java.util.List;
 public class DocumentoService {
     private final DocumentoRepository documentoRepository;
     private final TipoDocumentoRepository tipoDocumentoRepository;
+    private final DocumentoValidator documentoValidator;
 
     public DocumentoService(DocumentoRepository documentoRepository, TipoDocumentoRepository tipoDocumentoRepository) {
         this.documentoRepository = documentoRepository;
         this.tipoDocumentoRepository = tipoDocumentoRepository;
+        this.documentoValidator = new DocumentoValidator();
     }
 
     public void registrarParaVehiculo(Documento documento, Vehiculo vehiculo) throws SQLException {
@@ -41,13 +44,8 @@ public class DocumentoService {
 
     private void registrar(Documento documento, AmbitoDocumento ambito, int idPropietario) throws SQLException {
 
-        if (documento == null || !documento.validar()) {
-            throw new IllegalArgumentException("Los datos del documento no son válidos.");
-        }
-
-        if (documento.getTipoDocumento().getAmbito() != ambito) {
-            throw new IllegalArgumentException("El tipo de documento no corresponde a " + ambito + ".");
-        }
+        documentoValidator.validar(documento);
+        documentoValidator.validarAmbito(documento, ambito);
 
         documento.actualizarEstado(LocalDate.now());
 
@@ -87,9 +85,7 @@ public class DocumentoService {
 
     public Documento buscarPorNumero(String numero) throws SQLException {
 
-        if (numero == null || numero.isBlank()) {
-            throw new IllegalArgumentException( "El número del documento es obligatorio." );
-        }
+        documentoValidator.validarNumero(numero);
 
         try (Connection conexion = ConexionDB.obtenerConexion()) {
             return documentoRepository.buscarPorNumero(conexion,numero);

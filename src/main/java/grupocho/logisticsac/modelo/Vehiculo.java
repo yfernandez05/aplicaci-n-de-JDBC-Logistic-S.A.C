@@ -31,17 +31,7 @@ public class Vehiculo {
         this.estado = estado;
         this.activo = activo;
     }
-    public boolean validarPlaca() {
-        return placa != null && !placa.isBlank();
-    }
 
-    public boolean validar() {
-        return validarPlaca()
-                && tipo != null && !tipo.isBlank()
-                && capacidadCarga > 0
-                && condicion != null && !condicion.isBlank()
-                && estado != null && !estado.isBlank();
-    }
     public int getIdVehiculo() {
         return idVehiculo;
     }

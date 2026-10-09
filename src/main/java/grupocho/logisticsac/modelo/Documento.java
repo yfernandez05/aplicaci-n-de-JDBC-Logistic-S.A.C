@@ -53,20 +53,6 @@ public class Documento {
         }
     }
 
-    public boolean validarFechas() {
-        if (fechaEmision == null || fechaVencimiento == null) {
-            return false;
-        }
-        return !LocalDate.parse(fechaVencimiento).isBefore(LocalDate.parse(fechaEmision));
-    }
-
-    public boolean validar() {
-        return numero != null && !numero.isBlank()
-                && tipoDocumento != null
-                && estado != null && !estado.isBlank()
-                && validarFechas();
-    }
-
     public int getIdDocumento() {
         return idDocumento;
     }

@@ -17,13 +17,6 @@ public class FiltroTraslado {
     public FiltroTraslado() {
     }
 
-    public boolean validar() {
-        if (fechaDesde != null && fechaHasta != null) {
-            return !fechaDesde.isAfter(fechaHasta);
-        }
-        return true;
-    }
-
     public String getCodigo() {
         return codigo;
     }

@@ -7,6 +7,8 @@ import grupocho.logisticsac.modelo.Precinto;
 import grupocho.logisticsac.repository.EvidenciaRepository;
 import grupocho.logisticsac.repository.InspeccionRepository;
 import grupocho.logisticsac.repository.PrecintoRepository;
+import grupocho.logisticsac.validation.InspeccionValidator;
+import grupocho.logisticsac.validation.PrecintoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,6 +18,8 @@ public class InspeccionService {
     private final InspeccionRepository inspeccionRepository;
     private final EvidenciaRepository evidenciaRepository;
     private final PrecintoRepository precintoRepository;
+    private final InspeccionValidator inspeccionValidator;
+    private final PrecintoValidator precintoValidator;
 
     public InspeccionService(InspeccionRepository inspeccionRepository,
                              EvidenciaRepository evidenciaRepository,
@@ -23,18 +27,22 @@ public class InspeccionService {
         this.inspeccionRepository = inspeccionRepository;
         this.evidenciaRepository = evidenciaRepository;
         this.precintoRepository = precintoRepository;
+        this.inspeccionValidator = new InspeccionValidator();
+        this.precintoValidator = new PrecintoValidator();
     }
 
     // Guarda la inspeccion junto con sus evidencias y el precinto en una sola transaccion.
     // El precinto puede ser null cuando la inspeccion no es conforme.
     public void registrar(Inspeccion inspeccion, Precinto precinto) throws SQLException {
 
-        if (inspeccion == null || !inspeccion.validar()) {
-            throw new IllegalArgumentException("Los datos de la inspección no son válidos.");
+        inspeccionValidator.validar(inspeccion);
+
+        if (inspeccion.puedeAutorizar() && precinto == null) {
+            throw new IllegalArgumentException("El número de precinto es obligatorio cuando la inspección es conforme.");
         }
 
-        if (inspeccion.puedeAutorizar() && (precinto == null || !precinto.validar())) {
-            throw new IllegalArgumentException("El número de precinto es obligatorio cuando la inspección es conforme.");
+        if (precinto != null) {
+            precintoValidator.validar(precinto);
         }
 
         Connection conexion = null;
