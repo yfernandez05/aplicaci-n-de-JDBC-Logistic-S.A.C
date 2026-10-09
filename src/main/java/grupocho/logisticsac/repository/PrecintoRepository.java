@@ -6,4 +6,5 @@ import java.sql.SQLException;
 
 public interface PrecintoRepository {
     void insertar(Connection conexion, Precinto precinto) throws SQLException;
+    Precinto buscarPorTraslado(Connection conexion, int idTraslado) throws SQLException;
 }

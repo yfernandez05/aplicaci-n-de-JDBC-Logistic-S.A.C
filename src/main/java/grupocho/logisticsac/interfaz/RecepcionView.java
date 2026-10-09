@@ -1,8 +1,11 @@
 package grupocho.logisticsac.interfaz;
 
+import grupocho.logisticsac.dao.DocumentoDAO;
+import grupocho.logisticsac.dao.PrecintoDAO;
 import grupocho.logisticsac.dao.RecepcionDAO;
 import grupocho.logisticsac.dao.TrasladoDAO;
 import grupocho.logisticsac.enums.EstadoTraslado;
+import grupocho.logisticsac.modelo.DetalleTraslado;
 import grupocho.logisticsac.modelo.Recepcion;
 import grupocho.logisticsac.modelo.Traslado;
 import grupocho.logisticsac.modelo.Usuario;
@@ -18,7 +21,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class RecepcionView {
@@ -30,8 +32,8 @@ public class RecepcionView {
         this.usuario = usuario;
         RecepcionRepository recepcionRepository = new RecepcionDAO();
         TrasladoRepository trasladoRepository = new TrasladoDAO();
-        this.recepcionService = new RecepcionService(recepcionRepository, trasladoRepository);
-        this.trasladoService = new TrasladoService(trasladoRepository);
+        this.recepcionService = new RecepcionService(recepcionRepository, trasladoRepository, new PrecintoDAO());
+        this.trasladoService = new TrasladoService(trasladoRepository, new DocumentoDAO());
     }
 
     public void mostrar(Stage stage) {
@@ -40,16 +42,25 @@ public class RecepcionView {
         ComboBox<Traslado> cmbTraslado = new ComboBox<>();
         cmbTraslado.setPromptText("Seleccione traslado");
 
-        CheckBox chkPrecinto = new CheckBox("Precinto conforme");
+        Label lblTraslado = new Label("Traslado: -");
+
+        // detalle de la carga que debe llegar
+        ListView<String> listaCarga = new ListView<>();
+        listaCarga.setPrefHeight(110);
+
+        TextField txtPrecinto = new TextField();
+        txtPrecinto.setPromptText("Número de precinto que llegó");
+
         CheckBox chkCarga = new CheckBox("Carga conforme");
 
         TextArea txtObservacion = new TextArea();
-        txtObservacion.setPromptText("Observación");
+        txtObservacion.setPromptText("Observación / incidencia");
         txtObservacion.setPrefRowCount(3);
 
-        Button btnRegistrar = new Button("Registrar recepción");
+        Button btnRegistrar = new Button("Confirmar recepción");
         Button btnVolver = new Button("Volver");
         Label mensaje = new Label();
+        mensaje.setWrapText(true);
 
         try {
             List<Traslado> traslados = trasladoService.listar().stream()
@@ -61,6 +72,31 @@ public class RecepcionView {
             mensaje.setText("No se pudieron cargar los traslados.");
         }
 
+        cmbTraslado.setOnAction(event -> {
+            Traslado traslado = cmbTraslado.getValue();
+            listaCarga.getItems().clear();
+
+            if (traslado == null) {
+                lblTraslado.setText("Traslado: -");
+                return;
+            }
+
+            lblTraslado.setText("Vehículo: " + traslado.getVehiculo()
+                    + " | Conductor: " + traslado.getConductor()
+                    + " | " + traslado.getAlmacenOrigen().getNombre()
+                    + " -> " + traslado.getAlmacenDestino().getNombre());
+
+            try {
+                for (DetalleTraslado detalle : trasladoService.listarDetalles(traslado)) {
+                    listaCarga.getItems().add(detalle.getProducto().getDescripcion()
+                            + " - " + detalle.getCantidad()
+                            + " " + detalle.getProducto().getUnidadMedida());
+                }
+            } catch (SQLException e) {
+                mensaje.setText("No se pudo cargar el detalle del traslado.");
+            }
+        });
+
         btnRegistrar.setOnAction(event -> {
             try {
                 Traslado traslado = cmbTraslado.getValue();
@@ -70,32 +106,30 @@ public class RecepcionView {
                     return;
                 }
 
-                if (!chkPrecinto.isSelected() || !chkCarga.isSelected()) {
-                    if (txtObservacion.getText().isBlank()) {
-                        mensaje.setText("Ingrese una observación cuando exista una diferencia.");
-                        return;
-                    }
+                if (txtPrecinto.getText().isBlank()) {
+                    mensaje.setText("Ingrese el número de precinto que llegó.");
+                    return;
                 }
 
-                Recepcion recepcion = new Recepcion();
-                recepcion.setFechaHoraRecepcion(LocalDateTime.now());
-                recepcion.setPrecintoConforme(chkPrecinto.isSelected());
+                Recepcion recepcion = new Recepcion(traslado, usuario);
                 recepcion.setCargaConforme(chkCarga.isSelected());
-                recepcion.setObservacion(txtObservacion.getText());
-                recepcion.setTraslado(traslado);
-                recepcion.setDespachador(usuario);
+                recepcion.setObservacion(txtObservacion.getText().isBlank() ? null : txtObservacion.getText().trim());
 
-                recepcionService.registrar(recepcion);
+                // el servicio compara el precinto con el registrado en garita
+                recepcionService.registrar(recepcion, txtPrecinto.getText().trim());
+
+                String fechaHora = recepcion.getFechaHoraRecepcion().toLocalDate()
+                        + " " + recepcion.getFechaHoraRecepcion().toLocalTime().withNano(0);
 
                 mensaje.setText(
                         recepcion.tieneObservaciones()
-                                ? "Recepción registrada con observaciones."
-                                : "Recepción registrada correctamente."
+                                ? "Recepción registrada CON OBSERVACIONES (" + fechaHora + ")."
+                                : "Traslado " + traslado.getCodigo() + " RECIBIDO (" + fechaHora + ")."
                 );
 
                 cmbTraslado.getItems().remove(traslado);
                 cmbTraslado.setValue(null);
-                chkPrecinto.setSelected(false);
+                txtPrecinto.clear();
                 chkCarga.setSelected(false);
                 txtObservacion.clear();
 
@@ -114,21 +148,32 @@ public class RecepcionView {
         GridPane formulario = new GridPane();
         formulario.setHgap(10);
         formulario.setVgap(10);
-        formulario.setPadding(new Insets(20));
 
         formulario.add(new Label("Traslado:"), 0, 0);
         formulario.add(cmbTraslado, 1, 0);
-        formulario.add(chkPrecinto, 0, 1, 2, 1);
-        formulario.add(chkCarga, 0, 2, 2, 1);
+        formulario.add(new Label("Precinto:"), 0, 1);
+        formulario.add(txtPrecinto, 1, 1);
+        formulario.add(chkCarga, 1, 2);
         formulario.add(new Label("Observación:"), 0, 3);
         formulario.add(txtObservacion, 1, 3);
 
-        VBox layout = new VBox(15, titulo, formulario, btnRegistrar, mensaje, btnVolver);
+        VBox layout = new VBox(
+                12,
+                titulo,
+                formulario,
+                lblTraslado,
+                new Label("Carga según el detalle del traslado:"),
+                listaCarga,
+                btnRegistrar,
+                mensaje,
+                btnVolver
+        );
         layout.setPadding(new Insets(20));
 
-        Scene scene = new Scene(layout, 650, 500);
+        Scene scene = new Scene(layout, 700, 580);
         stage.setTitle("Logistic S.A.C. - Recepción");
         stage.setScene(scene);
         stage.show();
+        stage.centerOnScreen();
     }
 }

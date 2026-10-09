@@ -1,7 +1,14 @@
 package grupocho.logisticsac.dao;
 
-import grupocho.logisticsac.modelo.Traslado;
+import grupocho.logisticsac.enums.EstadoTraslado;
+import grupocho.logisticsac.modelo.Almacen;
+import grupocho.logisticsac.modelo.Conductor;
 import grupocho.logisticsac.modelo.DetalleTraslado;
+import grupocho.logisticsac.modelo.FiltroTraslado;
+import grupocho.logisticsac.modelo.Producto;
+import grupocho.logisticsac.modelo.Traslado;
+import grupocho.logisticsac.modelo.Usuario;
+import grupocho.logisticsac.modelo.Vehiculo;
 import grupocho.logisticsac.repository.TrasladoRepository;
 
 import java.sql.Connection;
@@ -10,16 +17,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TrasladoDAO implements TrasladoRepository {
 
+    private static final String SELECT_BASE = """
+            SELECT t.id_traslado,
+                   t.codigo,
+                   t.fecha_programada,
+                   t.estado,
+                   t.observacion,
+                   t.motivo_rechazo,
+                   t.fecha_hora_salida,
+                   ao.id_almacen AS id_origen,
+                   ao.codigo AS codigo_origen,
+                   ao.nombre AS nombre_origen,
+                   ad.id_almacen AS id_destino,
+                   ad.codigo AS codigo_destino,
+                   ad.nombre AS nombre_destino,
+                   v.id_vehiculo,
+                   v.placa,
+                   v.tipo,
+                   c.id_conductor,
+                   c.dni,
+                   c.nombres,
+                   rs.id_usuario AS id_responsable,
+                   rs.nombre_completo AS nombre_responsable,
+                   vg.id_usuario AS id_vigilante,
+                   vg.nombre_completo AS nombre_vigilante
+            FROM traslado t
+            INNER JOIN almacen ao ON t.id_almacen_origen = ao.id_almacen
+            INNER JOIN almacen ad ON t.id_almacen_destino = ad.id_almacen
+            INNER JOIN vehiculo v ON t.id_vehiculo = v.id_vehiculo
+            INNER JOIN conductor c ON t.id_conductor = c.id_conductor
+            LEFT JOIN usuario rs ON t.id_responsable_salida = rs.id_usuario
+            LEFT JOIN inspeccion i ON i.id_traslado = t.id_traslado
+            LEFT JOIN usuario vg ON i.id_vigilante = vg.id_usuario
+            """;
+
     public void insertar(Connection conexion, Traslado traslado) throws SQLException {
 
         String sqlTraslado = """
-                INSERT INTO traslado (codigo, fecha_programada, estado, observacion, motivo_rechazo,fecha_hora_salida, 
+                INSERT INTO traslado (codigo, fecha_programada, estado, observacion, motivo_rechazo,fecha_hora_salida,
                 id_almacen_origen, id_almacen_destino, id_vehiculo, id_conductor, id_responsable_salida)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -112,150 +152,68 @@ public class TrasladoDAO implements TrasladoRepository {
     public List<Traslado> listar(Connection conexion) throws SQLException {
         List<Traslado> lista = new ArrayList<>();
 
-        String sql = """
-        SELECT t.id_traslado,
-               t.codigo,
-               t.fecha_programada,
-               t.estado,
-               t.observacion,
-               t.motivo_rechazo,
-               ao.id_almacen AS id_origen,
-               ao.codigo AS codigo_origen,
-               ao.nombre AS nombre_origen,
-               ad.id_almacen AS id_destino,
-               ad.codigo AS codigo_destino,
-               ad.nombre AS nombre_destino,
-               v.id_vehiculo,
-               v.placa,
-               v.tipo,
-               c.id_conductor,
-               c.dni,
-               c.nombres
-        FROM traslado t
-        INNER JOIN almacen ao ON t.id_almacen_origen = ao.id_almacen
-        INNER JOIN almacen ad ON t.id_almacen_destino = ad.id_almacen
-        INNER JOIN vehiculo v ON t.id_vehiculo = v.id_vehiculo
-        INNER JOIN conductor c ON t.id_conductor = c.id_conductor
-        ORDER BY t.id_traslado DESC
-        """;
+        String sql = SELECT_BASE + " ORDER BY t.id_traslado DESC";
 
         try (PreparedStatement statement = conexion.prepareStatement(sql);
              ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
-                Traslado traslado = new Traslado();
-
-                traslado.setIdTraslado(rs.getInt("id_traslado"));
-                traslado.setCodigo(rs.getString("codigo"));
-                traslado.setFechaProgramada(rs.getDate("fecha_programada").toLocalDate());
-                traslado.setEstado(grupocho.logisticsac.enums.EstadoTraslado.valueOf(rs.getString("estado")));
-                traslado.setObservacion(rs.getString("observacion"));
-                traslado.setMotivoRechazo(rs.getString("motivo_rechazo"));
-
-                grupocho.logisticsac.modelo.Almacen origen = new grupocho.logisticsac.modelo.Almacen();
-                origen.setIdAlmacen(rs.getInt("id_origen"));
-                origen.setCodigo(rs.getString("codigo_origen"));
-                origen.setNombre(rs.getString("nombre_origen"));
-
-                grupocho.logisticsac.modelo.Almacen destino = new grupocho.logisticsac.modelo.Almacen();
-                destino.setIdAlmacen(rs.getInt("id_destino"));
-                destino.setCodigo(rs.getString("codigo_destino"));
-                destino.setNombre(rs.getString("nombre_destino"));
-
-                grupocho.logisticsac.modelo.Vehiculo vehiculo = new grupocho.logisticsac.modelo.Vehiculo();
-                vehiculo.setIdVehiculo(rs.getInt("id_vehiculo"));
-                vehiculo.setPlaca(rs.getString("placa"));
-                vehiculo.setTipo(rs.getString("tipo"));
-
-                grupocho.logisticsac.modelo.Conductor conductor = new grupocho.logisticsac.modelo.Conductor();
-                conductor.setIdConductor(rs.getInt("id_conductor"));
-                conductor.setDni(rs.getString("dni"));
-                conductor.setNombres(rs.getString("nombres"));
-
-                traslado.setAlmacenOrigen(origen);
-                traslado.setAlmacenDestino(destino);
-                traslado.setVehiculo(vehiculo);
-                traslado.setConductor(conductor);
-
-                lista.add(traslado);
+                lista.add(mapear(rs));
             }
         }
 
         return lista;
     }
 
-
     @Override
-    public List<Traslado> buscar(
-            Connection conexion,
-            String codigo,
-            java.time.LocalDate fecha,
-            grupocho.logisticsac.enums.EstadoTraslado estado,
-            Integer idVehiculo,
-            Integer idConductor,
-            Integer idAlmacen
-    ) throws SQLException {
+    public List<Traslado> buscar(Connection conexion, FiltroTraslado filtro) throws SQLException {
 
         List<Traslado> lista = new ArrayList<>();
 
-        StringBuilder sql = new StringBuilder("""
-        SELECT t.id_traslado,
-               t.codigo,
-               t.fecha_programada,
-               t.estado,
-               t.observacion,
-               t.motivo_rechazo,
-               ao.id_almacen AS id_origen,
-               ao.codigo AS codigo_origen,
-               ao.nombre AS nombre_origen,
-               ad.id_almacen AS id_destino,
-               ad.codigo AS codigo_destino,
-               ad.nombre AS nombre_destino,
-               v.id_vehiculo,
-               v.placa,
-               v.tipo,
-               c.id_conductor,
-               c.dni,
-               c.nombres
-        FROM traslado t
-        INNER JOIN almacen ao ON t.id_almacen_origen = ao.id_almacen
-        INNER JOIN almacen ad ON t.id_almacen_destino = ad.id_almacen
-        INNER JOIN vehiculo v ON t.id_vehiculo = v.id_vehiculo
-        INNER JOIN conductor c ON t.id_conductor = c.id_conductor
-        WHERE 1 = 1
-        """);
+        StringBuilder sql = new StringBuilder(SELECT_BASE);
+        sql.append(" WHERE 1 = 1");
 
         List<Object> parametros = new ArrayList<>();
 
-        if (codigo != null && !codigo.isBlank()) {
+        if (filtro.getCodigo() != null && !filtro.getCodigo().isBlank()) {
             sql.append(" AND t.codigo LIKE ?");
-            parametros.add("%" + codigo.trim() + "%");
+            parametros.add("%" + filtro.getCodigo().trim() + "%");
         }
 
-        if (fecha != null) {
-            sql.append(" AND t.fecha_programada = ?");
-            parametros.add(Date.valueOf(fecha));
+        if (filtro.getFechaDesde() != null) {
+            sql.append(" AND DATE(t.fecha_programada) >= ?");
+            parametros.add(Date.valueOf(filtro.getFechaDesde()));
         }
 
-        if (estado != null) {
+        if (filtro.getFechaHasta() != null) {
+            sql.append(" AND DATE(t.fecha_programada) <= ?");
+            parametros.add(Date.valueOf(filtro.getFechaHasta()));
+        }
+
+        if (filtro.getEstado() != null) {
             sql.append(" AND t.estado = ?");
-            parametros.add(estado.name());
+            parametros.add(filtro.getEstado().name());
         }
 
-        if (idVehiculo != null) {
+        if (filtro.getVehiculo() != null) {
             sql.append(" AND t.id_vehiculo = ?");
-            parametros.add(idVehiculo);
+            parametros.add(filtro.getVehiculo().getIdVehiculo());
         }
 
-        if (idConductor != null) {
+        if (filtro.getConductor() != null) {
             sql.append(" AND t.id_conductor = ?");
-            parametros.add(idConductor);
+            parametros.add(filtro.getConductor().getIdConductor());
         }
 
-        if (idAlmacen != null) {
+        if (filtro.getVigilante() != null) {
+            sql.append(" AND i.id_vigilante = ?");
+            parametros.add(filtro.getVigilante().getIdUsuario());
+        }
+
+        if (filtro.getAlmacen() != null) {
             sql.append(" AND (t.id_almacen_origen = ? OR t.id_almacen_destino = ?)");
-            parametros.add(idAlmacen);
-            parametros.add(idAlmacen);
+            parametros.add(filtro.getAlmacen().getIdAlmacen());
+            parametros.add(filtro.getAlmacen().getIdAlmacen());
         }
 
         sql.append(" ORDER BY t.id_traslado DESC");
@@ -268,45 +226,7 @@ public class TrasladoDAO implements TrasladoRepository {
 
             try (ResultSet rs = statement.executeQuery()) {
                 while (rs.next()) {
-                    Traslado traslado = new Traslado();
-
-                    traslado.setIdTraslado(rs.getInt("id_traslado"));
-                    traslado.setCodigo(rs.getString("codigo"));
-                    traslado.setFechaProgramada(rs.getDate("fecha_programada").toLocalDate());
-                    traslado.setEstado( grupocho.logisticsac.enums.EstadoTraslado.valueOf(rs.getString("estado")));
-                    traslado.setObservacion(rs.getString("observacion"));
-                    traslado.setMotivoRechazo(rs.getString("motivo_rechazo"));
-
-                    grupocho.logisticsac.modelo.Almacen origen = new grupocho.logisticsac.modelo.Almacen();
-
-                    origen.setIdAlmacen(rs.getInt("id_origen"));
-                    origen.setCodigo(rs.getString("codigo_origen"));
-                    origen.setNombre(rs.getString("nombre_origen"));
-
-                    grupocho.logisticsac.modelo.Almacen destino = new grupocho.logisticsac.modelo.Almacen();
-
-                    destino.setIdAlmacen(rs.getInt("id_destino"));
-                    destino.setCodigo(rs.getString("codigo_destino"));
-                    destino.setNombre(rs.getString("nombre_destino"));
-
-                    grupocho.logisticsac.modelo.Vehiculo vehiculo = new grupocho.logisticsac.modelo.Vehiculo();
-
-                    vehiculo.setIdVehiculo(rs.getInt("id_vehiculo"));
-                    vehiculo.setPlaca(rs.getString("placa"));
-                    vehiculo.setTipo(rs.getString("tipo"));
-
-                    grupocho.logisticsac.modelo.Conductor conductor = new grupocho.logisticsac.modelo.Conductor();
-
-                    conductor.setIdConductor(rs.getInt("id_conductor"));
-                    conductor.setDni(rs.getString("dni"));
-                    conductor.setNombres(rs.getString("nombres"));
-
-                    traslado.setAlmacenOrigen(origen);
-                    traslado.setAlmacenDestino(destino);
-                    traslado.setVehiculo(vehiculo);
-                    traslado.setConductor(conductor);
-
-                    lista.add(traslado);
+                    lista.add(mapear(rs));
                 }
             }
         }
@@ -314,4 +234,111 @@ public class TrasladoDAO implements TrasladoRepository {
         return lista;
     }
 
+    @Override
+    public boolean existeCodigo(Connection conexion, String codigo) throws SQLException {
+        String sql = "SELECT id_traslado FROM traslado WHERE codigo = ?";
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, codigo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    @Override
+    public List<DetalleTraslado> listarDetalles(Connection conexion, int idTraslado) throws SQLException {
+        List<DetalleTraslado> lista = new ArrayList<>();
+
+        String sql = """
+                SELECT d.id_detalle, d.cantidad,
+                       p.id_producto, p.codigo, p.descripcion, p.unidad_medida, p.activo
+                FROM detalle_traslado d
+                INNER JOIN producto p ON d.id_producto = p.id_producto
+                WHERE d.id_traslado = ?
+                ORDER BY p.descripcion
+                """;
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, idTraslado);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto producto = new Producto(
+                            rs.getInt("id_producto"),
+                            rs.getString("codigo"),
+                            rs.getString("descripcion"),
+                            rs.getString("unidad_medida"),
+                            rs.getBoolean("activo")
+                    );
+
+                    lista.add(new DetalleTraslado(
+                            rs.getInt("id_detalle"),
+                            producto,
+                            rs.getDouble("cantidad")
+                    ));
+                }
+            }
+        }
+
+        return lista;
+    }
+
+    private Traslado mapear(ResultSet rs) throws SQLException {
+        Traslado traslado = new Traslado();
+
+        traslado.setIdTraslado(rs.getInt("id_traslado"));
+        traslado.setCodigo(rs.getString("codigo"));
+        traslado.setFechaProgramada(rs.getDate("fecha_programada").toLocalDate());
+        traslado.setEstado(EstadoTraslado.valueOf(rs.getString("estado")));
+        traslado.setObservacion(rs.getString("observacion"));
+        traslado.setMotivoRechazo(rs.getString("motivo_rechazo"));
+
+        Timestamp fechaHoraSalida = rs.getTimestamp("fecha_hora_salida");
+        if (fechaHoraSalida != null) {
+            traslado.setFechaHoraSalida(fechaHoraSalida.toLocalDateTime());
+        }
+
+        Almacen origen = new Almacen();
+        origen.setIdAlmacen(rs.getInt("id_origen"));
+        origen.setCodigo(rs.getString("codigo_origen"));
+        origen.setNombre(rs.getString("nombre_origen"));
+
+        Almacen destino = new Almacen();
+        destino.setIdAlmacen(rs.getInt("id_destino"));
+        destino.setCodigo(rs.getString("codigo_destino"));
+        destino.setNombre(rs.getString("nombre_destino"));
+
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setIdVehiculo(rs.getInt("id_vehiculo"));
+        vehiculo.setPlaca(rs.getString("placa"));
+        vehiculo.setTipo(rs.getString("tipo"));
+
+        Conductor conductor = new Conductor();
+        conductor.setIdConductor(rs.getInt("id_conductor"));
+        conductor.setDni(rs.getString("dni"));
+        conductor.setNombres(rs.getString("nombres"));
+
+        traslado.setAlmacenOrigen(origen);
+        traslado.setAlmacenDestino(destino);
+        traslado.setVehiculo(vehiculo);
+        traslado.setConductor(conductor);
+
+        if (rs.getString("nombre_responsable") != null) {
+            Usuario responsable = new Usuario();
+            responsable.setIdUsuario(rs.getInt("id_responsable"));
+            responsable.setNombreCompleto(rs.getString("nombre_responsable"));
+            traslado.setResponsableSalida(responsable);
+        }
+
+        if (rs.getString("nombre_vigilante") != null) {
+            Usuario vigilante = new Usuario();
+            vigilante.setIdUsuario(rs.getInt("id_vigilante"));
+            vigilante.setNombreCompleto(rs.getString("nombre_vigilante"));
+            traslado.setVigilante(vigilante);
+        }
+
+        return traslado;
+    }
 }

@@ -1,13 +1,15 @@
 package grupocho.logisticsac.service;
 
 import grupocho.logisticsac.config.ConexionDB;
-import grupocho.logisticsac.dao.TipoDocumentoDAO;
+import grupocho.logisticsac.enums.AmbitoDocumento;
 import grupocho.logisticsac.modelo.TipoDocumento;
 import grupocho.logisticsac.repository.TipoDocumentoRepository;
 import grupocho.logisticsac.validation.TipoDocumentoValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TipoDocumentoService {
     private final TipoDocumentoRepository tipoDocumentoRepository;
@@ -25,6 +27,11 @@ public class TipoDocumentoService {
 
         try {
             conexion = ConexionDB.obtenerConexion();
+
+            if (tipoDocumentoRepository.buscarPorNombre(conexion, tipoDocumento.getNombre()) != null) {
+                throw new IllegalArgumentException("El tipo de documento ya existe.");
+            }
+
             conexion.setAutoCommit(false);
             tipoDocumentoRepository.insertar(conexion, tipoDocumento);
             conexion.commit();
@@ -55,5 +62,23 @@ public class TipoDocumentoService {
                     nombre
             );
         }
+    }
+
+    public List<TipoDocumento> listar() throws SQLException {
+        try (Connection conexion = ConexionDB.obtenerConexion()) {
+            return tipoDocumentoRepository.listar(conexion);
+        }
+    }
+
+    public List<TipoDocumento> listarPorAmbito(AmbitoDocumento ambito) throws SQLException {
+        List<TipoDocumento> lista = new ArrayList<>();
+
+        for (TipoDocumento tipo : listar()) {
+            if (tipo.getAmbito() == ambito) {
+                lista.add(tipo);
+            }
+        }
+
+        return lista;
     }
 }

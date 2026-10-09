@@ -11,8 +11,8 @@ public class PrecintoValidator {
         if (precinto.getNumero() == null || precinto.getNumero().isBlank()) {
             throw new IllegalArgumentException("El número del precinto es obligatorio.");
         }
-        if (precinto.getFechaColocacion() == null) {
-            throw new IllegalArgumentException("La fecha de colocación es obligatoria.");
+        if (precinto.getFechaRegistro() == null) {
+            throw new IllegalArgumentException("La fecha de registro del precinto es obligatoria.");
         }
 
         if (precinto.getTraslado() == null) {

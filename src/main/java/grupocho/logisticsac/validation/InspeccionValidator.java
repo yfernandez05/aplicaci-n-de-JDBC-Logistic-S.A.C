@@ -21,13 +21,16 @@ public class InspeccionValidator {
             throw new IllegalArgumentException("El resultado de la inspección es obligatorio.");
         }
 
-        if (!inspeccion.isCargaConforme() && (inspeccion.getObservacion() == null || inspeccion.getObservacion().isBlank())) {
+        // la inspeccion es conforme solo si el vehiculo y la carga estan conformes
+        boolean conforme = inspeccion.getResultado() == ResultadoInspeccion.CONFORME && inspeccion.isCargaConforme();
+
+        if (!conforme && (inspeccion.getObservacion() == null || inspeccion.getObservacion().isBlank())) {
             throw new IllegalArgumentException(
-                    "Debe registrar una observación si la carga no es conforme."
+                    "Debe registrar una observación si el vehículo o la carga no son conformes."
             );
         }
 
-        if (inspeccion.getResultado() == ResultadoInspeccion.CONFORME && (inspeccion.getEvidencias() == null || inspeccion.getEvidencias().isEmpty())) {
+        if (conforme && (inspeccion.getEvidencias() == null || inspeccion.getEvidencias().isEmpty())) {
             throw new IllegalArgumentException(
                     "La inspección conforme debe tener al menos una evidencia."
             );

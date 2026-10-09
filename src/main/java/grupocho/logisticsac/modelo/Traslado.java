@@ -22,9 +22,13 @@ public class Traslado {
     private LocalDateTime fechaHoraSalida;
     private Usuario responsableSalida;
     private List<DetalleTraslado> detalles;
+    private List<Documento> documentos;
+    // vigilante que inspecciono el traslado en garita
+    private Usuario vigilante;
 
     public Traslado() {
         this.detalles = new ArrayList<>();
+        this.documentos = new ArrayList<>();
         this.estado = EstadoTraslado.PROGRAMADO;
     }
 
@@ -37,11 +41,18 @@ public class Traslado {
         this.conductor = conductor;
         this.estado = EstadoTraslado.PROGRAMADO;
         this.detalles = new ArrayList<>();
+        this.documentos = new ArrayList<>();
     }
 
     public void agregarDetalle(DetalleTraslado detalle) {
         if (detalle != null) {
             detalles.add(detalle);
+        }
+    }
+
+    public void agregarDocumento(Documento documento) {
+        if (documento != null) {
+            documentos.add(documento);
         }
     }
     public boolean tieneDetalles() {
@@ -54,9 +65,11 @@ public class Traslado {
         this.responsableSalida = responsable;
     }
 
-    public void rechazar(String motivo) {
+    public void rechazar(String motivo, Usuario responsable) {
         this.estado = EstadoTraslado.RECHAZADO;
         this.motivoRechazo = motivo;
+        this.fechaHoraSalida = LocalDateTime.now();
+        this.responsableSalida = responsable;
     }
 
     public int getIdTraslado() {
@@ -157,5 +170,26 @@ public class Traslado {
 
     public void setDetalles(List<DetalleTraslado> detalles) {
         this.detalles = detalles;
+    }
+
+    public List<Documento> getDocumentos() {
+        return documentos;
+    }
+
+    public void setDocumentos(List<Documento> documentos) {
+        this.documentos = documentos;
+    }
+
+    public Usuario getVigilante() {
+        return vigilante;
+    }
+
+    public void setVigilante(Usuario vigilante) {
+        this.vigilante = vigilante;
+    }
+
+    @Override
+    public String toString() {
+        return codigo;
     }
 }

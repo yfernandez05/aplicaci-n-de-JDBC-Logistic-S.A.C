@@ -28,10 +28,12 @@ El sistema cuenta con diferentes usuarios según sus funciones:
 
 ### Funciones según el rol
 
-- **Administrador:** consulta usuarios y gestiona almacenes, vehículos, conductores, productos y traslados.
-- **Despachador:** gestiona traslados y registra la recepción.
-- **Vigilante:** realiza la inspección del vehículo y verifica la salida.
-- **Jefe de Seguridad:** autoriza o rechaza la salida de los vehículos.
+- **Administrador:** consulta usuarios y gestiona almacenes, vehículos, conductores, productos, tipos de documento, documentos de vehículos y conductores, traslados e historial.
+- **Despachador:** registra traslados (productos y documentos) y confirma la recepción en el almacén destino.
+- **Vigilante:** verifica los documentos obligatorios, registra la inspección (carga, precinto y fotos) y autoriza o rechaza la salida.
+- **Jefe de Seguridad:** autoriza o rechaza la salida y consulta el historial de traslados con su detalle.
+
+Las fotos de evidencia se copian a la carpeta `evidencia/` del proyecto y en la base de datos se guarda su ruta.
 
 ---
 

@@ -24,6 +24,11 @@ public class VehiculoService {
         Connection conexion = null;
         try {
             conexion = ConexionDB.obtenerConexion();
+
+            if (vehiculoRepository.buscarPorPlaca(conexion, vehiculo.getPlaca()) != null) {
+                throw new IllegalArgumentException("La placa ya existe.");
+            }
+
             conexion.setAutoCommit(false);
             vehiculoRepository.insertar(conexion, vehiculo);
             conexion.commit();

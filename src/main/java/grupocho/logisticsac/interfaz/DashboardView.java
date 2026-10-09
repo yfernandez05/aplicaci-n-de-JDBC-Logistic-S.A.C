@@ -1,7 +1,9 @@
 package grupocho.logisticsac.interfaz;
 
+import grupocho.logisticsac.dao.UsuarioDAO;
 import grupocho.logisticsac.enums.Rol;
 import grupocho.logisticsac.modelo.Usuario;
+import grupocho.logisticsac.service.UsuarioService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,6 +12,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardView {
     private final Usuario usuario;
@@ -33,7 +38,10 @@ public class DashboardView {
         Button btnCerrarSesion = new Button("Cerrar sesión");
         btnCerrarSesion.setPrefWidth(220);
 
-        btnCerrarSesion.setOnAction(event -> stage.close());
+        btnCerrarSesion.setOnAction(event -> {
+            UsuarioService usuarioService = new UsuarioService(new UsuarioDAO());
+            new LoginView(usuarioService).mostrar(stage);
+        });
 
         VBox layout = new VBox(15, titulo, bienvenida, rol, opciones, btnCerrarSesion);
         layout.setAlignment(Pos.CENTER);
@@ -47,37 +55,40 @@ public class DashboardView {
         stage.centerOnScreen();
     }
 
+    // cada rol ve solo las opciones que le corresponden
     private void crearOpciones(GridPane opciones) {
-        int fila = 0;
-        int columna = 0;
+        List<String> textos = new ArrayList<>();
 
         if (usuario.tieneRol(Rol.ADMINISTRADOR)) {
-            agregarBoton(opciones, "Usuarios", columna++, fila);
-            agregarBoton(opciones, "Almacenes", columna++, fila++);
-            columna = 0;
-
-            agregarBoton(opciones, "Vehículos", columna++, fila);
-            agregarBoton(opciones, "Conductores", columna++, fila++);
-            columna = 0;
-
-            agregarBoton(opciones, "Productos", columna++, fila);
-            agregarBoton(opciones, "Traslados", columna++, fila++);
-            columna = 0;
-
-            agregarBoton(opciones, "Historial de traslados", columna++, fila);
+            textos.add("Usuarios");
+            textos.add("Almacenes");
+            textos.add("Vehículos");
+            textos.add("Conductores");
+            textos.add("Productos");
+            textos.add("Tipos de documento");
+            textos.add("Documentos");
+            textos.add("Traslados");
+            textos.add("Historial de traslados");
         }
 
         if (usuario.tieneRol(Rol.DESPACHADOR)) {
-            agregarBoton(opciones, "Traslados", columna++, fila);
-            agregarBoton(opciones, "Recepción", columna++, fila);
+            textos.add("Traslados");
+            textos.add("Recepción");
         }
 
         if (usuario.tieneRol(Rol.VIGILANTE)) {
-            agregarBoton(opciones, "Inspección y salida", columna++, fila);
+            textos.add("Inspección y salida");
+            textos.add("Autorización / rechazo");
         }
 
         if (usuario.tieneRol(Rol.JEFE_SEGURIDAD)) {
-            agregarBoton(opciones, "Autorización / rechazo", columna++, fila);
+            textos.add("Autorización / rechazo");
+            textos.add("Historial de traslados");
+        }
+
+        // se colocan en dos columnas
+        for (int i = 0; i < textos.size(); i++) {
+            agregarBoton(opciones, textos.get(i), i % 2, i / 2);
         }
     }
 
@@ -134,6 +145,16 @@ public class DashboardView {
         if (texto.equals("Usuarios")) {
             boton.setOnAction(event ->
                     new UsuarioView(usuario).mostrar((Stage) boton.getScene().getWindow()));
+        }
+
+        if (texto.equals("Tipos de documento")) {
+            boton.setOnAction(event ->
+                    new TipoDocumentoView(usuario).mostrar((Stage) boton.getScene().getWindow()));
+        }
+
+        if (texto.equals("Documentos")) {
+            boton.setOnAction(event ->
+                    new DocumentoView(usuario).mostrar((Stage) boton.getScene().getWindow()));
         }
 
         opciones.add(boton, columna, fila);

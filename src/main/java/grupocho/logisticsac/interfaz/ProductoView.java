@@ -154,6 +154,7 @@ public class ProductoView {
                 txtUnidad,
                 btnRegistrar,
                 btnActualizar,
+                btnEliminar,
                 tabla,
                 mensaje,
                 btnVolver
