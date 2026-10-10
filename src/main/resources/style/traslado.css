@@ -1,0 +1,103 @@
+
+.traslado-contenedor {
+    -fx-background-color: #f4f7fb;
+    -fx-padding: 20;
+}
+
+.traslado-scroll {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: #d5deea;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+}
+.traslado-scroll > .viewport {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8px;
+}
+
+.traslado-scroll > .corner {
+    -fx-background-color: #f1f5f9;
+}
+
+.traslado-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #243b53;
+}
+
+.traslado-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #e1e8f0;
+    -fx-border-radius: 10;
+    -fx-padding: 18;
+}
+
+.traslado-panel .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+}
+
+.traslado-panel .text-field,
+.traslado-panel .combo-box,
+.traslado-panel .date-picker,
+.traslado-panel .spinner {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-pref-height: 34;
+}
+.traslado-panel .text-field:focused,
+.traslado-panel .combo-box:focused,
+.traslado-panel .date-picker:focused {
+    -fx-border-color: #3b82f6;
+}
+
+.traslado-panel .button {
+    -fx-background-color: #e8eef6;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 9 12;
+    -fx-cursor: hand;
+}
+
+.traslado-panel .button:hover {
+    -fx-background-color: #d8e3f1;
+}
+
+.traslado-registrar {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 7;
+    -fx-padding: 11 16;
+    -fx-cursor: hand;
+}
+
+.traslado-registrar:hover {
+    -fx-background-color: #1d4ed8;
+}
+.traslado-panel .table-view {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.traslado-panel .table-view .column-header-background {
+    -fx-background-color: #edf2f7;
+}
+
+.traslado-panel .table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.traslado-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}

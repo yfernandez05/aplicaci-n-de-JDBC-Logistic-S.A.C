@@ -1,3 +1,4 @@
+
 package grupocho.logisticsac.interfaz;
 
 import grupocho.logisticsac.dao.DocumentoDAO;
@@ -21,6 +22,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.sql.SQLException;
@@ -32,9 +34,15 @@ public class AutorizacionView {
     private final TrasladoService trasladoService;
     private final InspeccionService inspeccionService;
     private final DocumentoService documentoService;
+    private final DashboardLayout dashboardLayout;
 
     public AutorizacionView(Usuario usuario) {
+        this(usuario, null);
+    }
+
+    public AutorizacionView(Usuario usuario,DashboardLayout dashboardLayout) {
         this.usuario = usuario;
+        this.dashboardLayout = dashboardLayout;
         TrasladoRepository trasladoRepository = new TrasladoDAO();
         DocumentoRepository documentoRepository = new DocumentoDAO();
         this.trasladoService = new TrasladoService(trasladoRepository, documentoRepository);
@@ -44,40 +52,54 @@ public class AutorizacionView {
 
     public void mostrar(Stage stage) {
         Label titulo = new Label("AUTORIZACIÓN DE SALIDA");
+        titulo.getStyleClass().add("autorizacion-titulo");
 
         ComboBox<Traslado> cmbTraslado = new ComboBox<>();
-        cmbTraslado.setPromptText("Seleccione traslado");
+        cmbTraslado.setPromptText("Seleccione un traslado");
+        cmbTraslado.setMaxWidth(Double.MAX_VALUE);
+        Label lblDocumentos = new Label("Documentos: pendiente de revisión");
+        Label lblInspeccion = new Label("Inspección: pendiente de revisión");
+        lblDocumentos.getStyleClass().add("autorizacion-estado");
+        lblInspeccion.getStyleClass().add("autorizacion-estado");
 
         TableView<Documento> tablaDocumentos = TablaDocumentos.crear();
-
-        Label lblDocumentos = new Label("Documentos: -");
-        Label lblInspeccion = new Label("Inspección: -");
+        tablaDocumentos.setPrefHeight(190);
+        tablaDocumentos.setMinHeight(130);
 
         TextArea txtMotivo = new TextArea();
-        txtMotivo.setPromptText("Motivo de rechazo");
+        txtMotivo.setPromptText("Escriba el motivo del rechazo");
         txtMotivo.setPrefRowCount(3);
+        txtMotivo.setWrapText(true);
 
         Button btnAutorizar = new Button("Autorizar salida");
-        Button btnRechazar = new Button("Rechazar");
-        Button btnVolver = new Button("Volver");
-        Label mensaje = new Label();
-        mensaje.setWrapText(true);
-
+        btnAutorizar.getStyleClass().add("autorizacion-aprobar");
         btnAutorizar.setDisable(true);
 
+        Button btnRechazar = new Button("Rechazar salida");
+        btnRechazar.getStyleClass().add("autorizacion-rechazar");
+
+        Button btnVolver = new Button("Volver");
+        btnVolver.getStyleClass().add("autorizacion-volver");
+
+        Label mensaje = new Label();
+        mensaje.setWrapText(true);
+        mensaje.getStyleClass().add("autorizacion-mensaje");
+
+        List<Documento> documentos = new ArrayList<>();
+        Inspeccion[] inspeccionActual = new Inspeccion[1];
+
+
         try {
-            List<Traslado> traslados = trasladoService.listar().stream()
+            List<Traslado> traslados = trasladoService.listar()
+                    .stream()
                     .filter(t -> t.getEstado() == EstadoTraslado.PROGRAMADO)
                     .toList();
 
             cmbTraslado.setItems(FXCollections.observableArrayList(traslados));
+
         } catch (SQLException e) {
             mensaje.setText("No se pudieron cargar los traslados.");
         }
-
-        // lista de verificacion e inspeccion del traslado seleccionado
-        List<Documento> documentos = new ArrayList<>();
-        Inspeccion[] inspeccionActual = new Inspeccion[1];
 
         cmbTraslado.setOnAction(event -> {
             Traslado traslado = cmbTraslado.getValue();
@@ -89,51 +111,56 @@ public class AutorizacionView {
             mensaje.setText("");
 
             if (traslado == null) {
-                lblDocumentos.setText("Documentos: -");
-                lblInspeccion.setText("Inspección: -");
+                lblDocumentos.setText("Documentos: pendiente de revisión");
+                lblInspeccion.setText("Inspección: pendiente de revisión");
                 return;
             }
 
             try {
                 documentos.addAll(documentoService.verificarDocumentos(traslado));
                 tablaDocumentos.setItems(FXCollections.observableArrayList(documentos));
-
-                boolean documentosConformes = true;
-                for (Documento documento : documentos) {
-                    if (!documento.estaVigente()) {
-                        documentosConformes = false;
-                    }
-                }
-
-                lblDocumentos.setText(documentosConformes
-                        ? "Documentos: CONFORMES"
-                        : "Documentos: CON OBSERVACIONES (faltantes o vencidos)");
-
+                boolean documentosConformes = documentos.stream().allMatch(Documento::estaVigente);
+                lblDocumentos.setText(documentosConformes ? "Documentos conformes" : "Documentos con observaciones");
                 Inspeccion inspeccion = inspeccionService.buscarPorTraslado(traslado.getIdTraslado());
                 inspeccionActual[0] = inspeccion;
 
                 if (inspeccion == null) {
-                    lblInspeccion.setText("Inspección: SIN REGISTRAR");
+                    lblInspeccion.setText("Inspección sin registrar");
                 } else {
-                    lblInspeccion.setText("Inspección: " + inspeccion.getResultado()
-                            + " | Carga: " + (inspeccion.isCargaConforme() ? "CONFORME" : "NO CONFORME")
-                            + " | Evidencias: " + inspeccion.getEvidencias().size()
-                            + " | Vigilante: " + inspeccion.getVigilante().getNombreCompleto()
-                            + (inspeccion.getObservacion() != null ? " | Obs.: " + inspeccion.getObservacion() : ""));
+                    String detalleInspeccion =
+                            "Resultado: " + inspeccion.getResultado()
+                                    + " | Carga: "
+                                    + (inspeccion.isCargaConforme()
+                                    ? "Conforme" : "No conforme")
+                                    + " | Evidencias: "
+                                    + inspeccion.getEvidencias().size();
+
+                    if (inspeccion.getVigilante() != null) {
+                        detalleInspeccion += " | Vigilante: " + inspeccion.getVigilante().getNombreCompleto();
+                    }
+
+                    if (inspeccion.getObservacion() != null
+                            && !inspeccion.getObservacion().isBlank()) {
+                        detalleInspeccion += " | Observación: " + inspeccion.getObservacion();
+                    }
+
+                    lblInspeccion.setText(detalleInspeccion);
                 }
 
-                // solo se habilita autorizar cuando documentos e inspeccion estan conformes
                 boolean puedeAutorizar = documentosConformes && inspeccion != null && inspeccion.puedeAutorizar();
+
                 btnAutorizar.setDisable(!puedeAutorizar);
 
                 if (!puedeAutorizar) {
-                    mensaje.setText("La autorización está bloqueada. Solo puede rechazar la salida indicando el motivo.");
+                    mensaje.setText( "No se puede autorizar. Revise los documentos " + "y la inspección, o indique el motivo del rechazo.");
                 }
+
             } catch (SQLException e) {
                 mensaje.setText("No se pudo cargar la información del traslado.");
             }
         });
 
+        // Autorizar salida.
         btnAutorizar.setOnAction(event -> {
             try {
                 Traslado traslado = cmbTraslado.getValue();
@@ -148,18 +175,25 @@ public class AutorizacionView {
                     return;
                 }
 
-                trasladoService.autorizarSalida(traslado, usuario, inspeccionActual[0], documentos);
+                trasladoService.autorizarSalida(
+                        traslado,
+                        usuario,
+                        inspeccionActual[0],
+                        documentos
+                );
 
                 cmbTraslado.getItems().remove(traslado);
                 cmbTraslado.setValue(null);
+                txtMotivo.clear();
 
-                mensaje.setText("Salida autorizada. Traslado " + traslado.getCodigo()
-                        + " EN_TRANSITO desde " + traslado.getFechaHoraSalida().toLocalDate()
-                        + " " + traslado.getFechaHoraSalida().toLocalTime().withNano(0)
-                        + " por " + usuario.getUsername() + ".");
+                mensaje.setText(
+                        "Salida autorizada para el traslado "
+                                + traslado.getCodigo() + "."
+                );
 
             } catch (IllegalArgumentException | IllegalStateException e) {
                 mensaje.setText(e.getMessage());
+
             } catch (SQLException e) {
                 mensaje.setText("Error al autorizar la salida.");
             }
@@ -175,50 +209,109 @@ public class AutorizacionView {
                 }
 
                 if (txtMotivo.getText().isBlank()) {
-                    mensaje.setText("Ingrese el motivo de rechazo.");
+                    mensaje.setText("Ingrese el motivo del rechazo.");
                     return;
                 }
 
-                trasladoService.rechazar(traslado, txtMotivo.getText().trim(), usuario);
+                trasladoService.rechazar(traslado,txtMotivo.getText().trim(),usuario);
 
                 cmbTraslado.getItems().remove(traslado);
                 cmbTraslado.setValue(null);
                 txtMotivo.clear();
 
-                mensaje.setText("Traslado " + traslado.getCodigo() + " RECHAZADO por " + usuario.getUsername() + ".");
+                mensaje.setText("Traslado " + traslado.getCodigo() + " rechazado correctamente.");
 
             } catch (IllegalArgumentException | IllegalStateException e) {
                 mensaje.setText(e.getMessage());
+
             } catch (SQLException e) {
                 mensaje.setText("Error al rechazar el traslado.");
             }
         });
 
         btnVolver.setOnAction(event -> {
-            DashboardView dashboardView = new DashboardView(usuario);
-            dashboardView.mostrar(stage);
+            if (dashboardLayout != null) {
+                dashboardLayout.mostrarContenido("Panel principal", null);
+            } else {
+                new DashboardView(usuario).mostrar(stage);
+            }
         });
 
-        VBox layout = new VBox(
+        VBox panelTraslado = new VBox(
                 10,
-                titulo,
-                new HBox(10, new Label("Traslado:"), cmbTraslado),
-                new Label("Documentos obligatorios:"),
+                new Label("TRASLADO"),
+                cmbTraslado
+        );
+        panelTraslado.getStyleClass().add("autorizacion-panel");
+
+        VBox panelDocumentos = new VBox(
+                10,
+                new Label("DOCUMENTOS OBLIGATORIOS"),
                 tablaDocumentos,
-                lblDocumentos,
-                lblInspeccion,
-                new Label("Motivo (solo para rechazar):"),
-                txtMotivo,
+                lblDocumentos
+        );
+        panelDocumentos.getStyleClass().add("autorizacion-panel");
+
+        VBox panelInspeccion = new VBox(
+                10,
+                new Label("RESULTADO DE INSPECCIÓN"),
+                lblInspeccion
+        );
+        panelInspeccion.getStyleClass().add("autorizacion-panel");
+
+        VBox panelRechazo = new VBox(
+                10,
+                new Label("MOTIVO DE RECHAZO"),
+                txtMotivo
+        );
+        panelRechazo.getStyleClass().add("autorizacion-panel");
+
+        VBox contenido = new VBox(
+                16,
+                titulo,
+                panelTraslado,
+                panelDocumentos,
+                panelInspeccion,
+                panelRechazo,
                 new HBox(10, btnAutorizar, btnRechazar),
                 mensaje,
                 btnVolver
         );
-        layout.setPadding(new Insets(20));
 
-        Scene scene = new Scene(layout, 850, 600);
-        stage.setTitle("Logistic S.A.C. - Autorización de salida");
-        stage.setScene(scene);
-        stage.show();
-        stage.centerOnScreen();
+        contenido.setPadding(new Insets(10));
+        contenido.getStyleClass().add("autorizacion-contenedor");
+
+        if (dashboardLayout != null) {
+            Scene scene = stage.getScene();
+            var css = getClass().getResource("/style/autorizacion.css");
+
+            if (css != null && !scene.getStylesheets().contains( css.toExternalForm())) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            ScrollPane scroll = new ScrollPane(contenido);
+            scroll.setFitToWidth(true);
+            scroll.setPannable(true);
+            scroll.getStyleClass().add("autorizacion-scroll");
+
+            dashboardLayout.mostrarContenido("Autorización / rechazo",scroll);
+
+        } else {
+            ScrollPane scroll = new ScrollPane(contenido);
+            scroll.setFitToWidth(true);
+            scroll.setPannable(true);
+
+            Scene scene = new Scene(scroll, 1000, 700);
+
+            var css = getClass().getResource("/style/autorizacion.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            stage.setTitle("Logistic S.A.C. - Autorización de salida");
+            stage.setScene(scene);
+            stage.show();
+            stage.centerOnScreen();
+        }
     }
 }

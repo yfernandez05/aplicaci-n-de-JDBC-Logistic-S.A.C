@@ -8,33 +8,39 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
 public class UsuarioView {
+
     private final Usuario usuarioActual;
     private final UsuarioService usuarioService;
+    private final DashboardLayout dashboardLayout;
 
     public UsuarioView(Usuario usuarioActual) {
+        this(usuarioActual, null);
+    }
+
+    public UsuarioView(Usuario usuarioActual, DashboardLayout dashboardLayout) {
         this.usuarioActual = usuarioActual;
+        this.dashboardLayout = dashboardLayout;
+
         UsuarioRepository repository = new UsuarioDAO();
         this.usuarioService = new UsuarioService(repository);
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("USUARIOS");
 
         TableView<Usuario> tabla = new TableView<>();
 
         TableColumn<Usuario, Integer> id = new TableColumn<>("ID");
         id.setCellValueFactory(data ->
-                new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getIdUsuario()));
+                new javafx.beans.property.SimpleObjectProperty<>(
+                        data.getValue().getIdUsuario()
+                ));
 
         TableColumn<Usuario, String> username = new TableColumn<>("Usuario");
         username.setCellValueFactory(data ->
@@ -58,6 +64,7 @@ public class UsuarioView {
         tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         Label mensaje = new Label();
+        mensaje.getStyleClass().add("usuario-mensaje");
 
         try {
             tabla.setItems(
@@ -68,18 +75,42 @@ public class UsuarioView {
         }
 
         Button btnVolver = new Button("Volver");
+        btnVolver.getStyleClass().add("usuario-boton-secundario");
+
         btnVolver.setOnAction(event -> {
-            DashboardView dashboardView = new DashboardView(usuarioActual);
-            dashboardView.mostrar(stage);
+            if (dashboardLayout != null) {
+                dashboardLayout.mostrarContenido("Panel principal", null);
+            } else {
+                new DashboardView(usuarioActual).mostrar(stage);
+            }
         });
 
-        VBox layout = new VBox(15, titulo, tabla, mensaje, btnVolver);
-        layout.setPadding(new Insets(20));
+        VBox contenido = new VBox(15, tabla, mensaje, btnVolver);
+        tabla.getStyleClass().add("usuario-tabla");
+        contenido.setPadding(new Insets(20));
+        contenido.getStyleClass().add("usuario-contenedor");
 
-        Scene scene = new Scene(layout, 750, 500);
+        if (dashboardLayout != null) {
+            Scene scene = stage.getScene();
+            var css = getClass().getResource("/style/usuario.css");
 
-        stage.setTitle("Logistic S.A.C. - Usuarios");
-        stage.setScene(scene);
-        stage.show();
+            if (css != null && !scene.getStylesheets().contains(css.toExternalForm())) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            dashboardLayout.mostrarContenido("Usuarios", contenido);
+
+        } else {
+            Scene scene = new Scene(contenido, 750, 500);
+
+            var css = getClass().getResource("/style/usuario.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            stage.setTitle("Logistic S.A.C. - Usuarios");
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 }

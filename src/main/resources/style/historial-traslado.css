@@ -1,0 +1,139 @@
+.historial-contenedor {
+    -fx-background-color: #f0f4fa;
+    -fx-spacing: 14;
+}
+
+.historial-titulo {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #202b3c;
+}
+
+.historial-filtros {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+    -fx-padding: 12;
+    -fx-background-color: white;
+    -fx-border-color: #d5deeb;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.historial-campo {
+    -fx-pref-width: 160px;
+    -fx-min-height: 35px;
+    -fx-background-color: white;
+    -fx-border-color: #cbd7e8;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 7 10;
+    -fx-font-size: 13px;
+    -fx-text-fill: #263b59;
+}
+
+.historial-campo:focused {
+    -fx-border-color: #8ca9d0;
+}
+
+.historial-boton {
+    -fx-background-color: #e7edf6;
+    -fx-text-fill: #17365d;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.historial-boton:hover {
+    -fx-background-color: #d5e1f1;
+}
+
+.historial-boton-secundario {
+    -fx-background-color: #e7edf6;
+    -fx-text-fill: #17365d;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.historial-boton-secundario:hover {
+    -fx-background-color: #d5e1f1;
+}
+
+.historial-tabla {
+    -fx-background-color: white;
+    -fx-background-radius: 7;
+    -fx-border-color: #dce4ef;
+    -fx-border-radius: 7;
+    -fx-padding: 2;
+}
+
+.historial-tabla .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #f5f5f5, #d8d8d8);
+}
+
+.historial-tabla .column-header,
+.historial-tabla .filler {
+    -fx-background-color: transparent;
+    -fx-size: 35px;
+    -fx-border-color: #c9c9c9;
+}
+
+.historial-tabla .column-header .label {
+    -fx-text-fill: #17365d;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 8;
+}
+
+.historial-tabla .table-row-cell {
+    -fx-cell-size: 34px;
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e7ebf1 transparent;
+}
+
+.historial-tabla .table-row-cell:odd {
+    -fx-background-color: #fafafa;
+}
+
+.historial-tabla .table-row-cell:selected {
+    -fx-background-color: #dce8f8;
+}
+
+.historial-tabla .table-row-cell:selected .text {
+    -fx-fill: #17365d;
+}
+
+.historial-tabla .table-cell {
+    -fx-text-fill: #263b59;
+    -fx-font-size: 12px;
+    -fx-padding: 6;
+}
+
+.historial-detalle {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12px;
+    -fx-control-inner-background: white;
+    -fx-text-fill: #263b59;
+    -fx-border-color: #dce4ef;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+}
+
+.historial-mensaje {
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+}
+
+.historial-scroll {
+    -fx-background-color: transparent;
+    -fx-background: #f0f4fa;
+    -fx-border-color: transparent;
+}
+
+.historial-scroll > .viewport {
+    -fx-background-color: #f0f4fa;
+}

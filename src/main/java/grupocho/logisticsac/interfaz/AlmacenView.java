@@ -7,9 +7,13 @@ import grupocho.logisticsac.repository.AlmacenRepository;
 import grupocho.logisticsac.service.AlmacenService;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.sql.SQLException;
@@ -17,31 +21,51 @@ import java.sql.SQLException;
 public class AlmacenView {
     private final Usuario usuario;
     private final AlmacenService almacenService;
+    private final DashboardLayout dashboardLayout;
 
     public AlmacenView(Usuario usuario) {
+        this(usuario, null);
+    }
+
+    public AlmacenView(Usuario usuario, DashboardLayout dashboardLayout) {
         this.usuario = usuario;
+        this.dashboardLayout = dashboardLayout;
         AlmacenRepository repository = new AlmacenDAO();
         this.almacenService = new AlmacenService(repository);
     }
 
     public void mostrar(Stage stage) {
         Label titulo = new Label("ALMACENES");
+        titulo.getStyleClass().add("almacen-titulo");
+
+        Label subtitulo = new Label("Gestión de almacenes y ubicaciones");
+        subtitulo.getStyleClass().add("almacen-subtitulo");
 
         TextField txtCodigo = new TextField();
         txtCodigo.setPromptText("Código");
 
         TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Nombre");
+        txtNombre.setPromptText("Nombre del almacén");
 
         TextField txtDireccion = new TextField();
         txtDireccion.setPromptText("Dirección");
 
         Button btnRegistrar = new Button("Registrar");
+        btnRegistrar.getStyleClass().add("almacen-registrar");
+
         Button btnActualizar = new Button("Actualizar");
+        btnActualizar.getStyleClass().add("almacen-actualizar");
+
         Button btnEliminar = new Button("Eliminar");
+        btnEliminar.getStyleClass().add("almacen-eliminar");
+
         Button btnVolver = new Button("Volver");
+        btnVolver.getStyleClass().add("almacen-volver");
 
         TableView<Almacen> tabla = new TableView<>();
+        tabla.getStyleClass().add("almacen-tabla");
+        tabla.setPrefHeight(280);
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Almacen, String> codigo = new TableColumn<>("Código");
         codigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
@@ -55,6 +79,8 @@ public class AlmacenView {
         tabla.getColumns().addAll(codigo, nombre, direccion);
 
         Label mensaje = new Label();
+        mensaje.getStyleClass().add("almacen-mensaje");
+        mensaje.setWrapText(true);
 
         tabla.setOnMouseClicked(event -> {
             Almacen seleccionado = tabla.getSelectionModel().getSelectedItem();
@@ -74,14 +100,9 @@ public class AlmacenView {
                         txtNombre.getText(),
                         txtDireccion.getText()
                 );
-
                 almacenService.registrar(almacen);
                 cargar(tabla, mensaje);
-
-                txtCodigo.clear();
-                txtNombre.clear();
-                txtDireccion.clear();
-
+                limpiar(txtCodigo, txtNombre, txtDireccion);
                 mensaje.setText("Almacén registrado correctamente.");
             } catch (IllegalArgumentException e) {
                 mensaje.setText(e.getMessage());
@@ -97,11 +118,9 @@ public class AlmacenView {
                     mensaje.setText("Seleccione un almacén.");
                     return;
                 }
-
                 seleccionado.setCodigo(txtCodigo.getText());
                 seleccionado.setNombre(txtNombre.getText());
                 seleccionado.setDireccion(txtDireccion.getText());
-
                 almacenService.actualizar(seleccionado);
                 cargar(tabla, mensaje);
                 mensaje.setText("Almacén actualizado correctamente.");
@@ -119,40 +138,79 @@ public class AlmacenView {
                     mensaje.setText("Seleccione un almacén.");
                     return;
                 }
-
                 almacenService.eliminar(seleccionado.getIdAlmacen());
                 cargar(tabla, mensaje);
-                txtCodigo.clear();
-                txtNombre.clear();
-                txtDireccion.clear();
+                limpiar(txtCodigo, txtNombre, txtDireccion);
                 mensaje.setText("Almacén eliminado correctamente.");
             } catch (SQLException e) {
                 mensaje.setText("Error al eliminar almacén.");
             }
         });
 
-        btnVolver.setOnAction(event -> new DashboardView(usuario).mostrar(stage));
+        btnVolver.setOnAction(event -> {
+            if (dashboardLayout != null) {
+                dashboardLayout.mostrarContenido("Panel principal", null);
+            } else {
+                new DashboardView(usuario).mostrar(stage);
+            }
+        });
 
-        VBox layout = new VBox(
-                10,
-                titulo,
-                txtCodigo,
-                txtNombre,
-                txtDireccion,
-                btnRegistrar,
-                btnActualizar,
-                btnEliminar,
-                tabla,
-                mensaje,
-                btnVolver
-        );
+        GridPane formulario = new GridPane();
+        formulario.setHgap(12);
+        formulario.setVgap(10);
+        formulario.setMaxWidth(750);
 
-        layout.setPadding(new Insets(20));
+        formulario.add(new Label("Código:"), 0, 0);
+        formulario.add(txtCodigo, 1, 0);
+        formulario.add(new Label("Nombre:"), 2, 0);
+        formulario.add(txtNombre, 3, 0);
+        formulario.add(new Label("Dirección:"), 0, 1);
+        formulario.add(txtDireccion, 1, 1, 3, 1);
 
-        Scene scene = new Scene(layout, 700, 500);
-        stage.setTitle("Logistic S.A.C. - Almacenes");
-        stage.setScene(scene);
-        stage.show();
+        GridPane.setHgrow(txtCodigo, Priority.ALWAYS);
+        GridPane.setHgrow(txtNombre, Priority.ALWAYS);
+        GridPane.setHgrow(txtDireccion, Priority.ALWAYS);
+
+        HBox botones = new HBox(8, btnRegistrar, btnActualizar, btnEliminar);
+        VBox panelFormulario = crearPanel("DATOS DEL ALMACÉN", formulario);
+        VBox panelTabla = crearPanel("ALMACENES REGISTRADOS", tabla);
+
+        VBox contenido = new VBox(12, titulo, subtitulo, panelFormulario, botones, panelTabla, mensaje, btnVolver);
+        contenido.getStyleClass().add("almacen-contenedor");
+        contenido.setPadding(new Insets(20));
+
+        ScrollPane scroll = new ScrollPane(contenido);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("almacen-scroll");
+
+        cargar(tabla, mensaje);
+
+        if (dashboardLayout != null) {
+            dashboardLayout.mostrarContenido("Almacenes", scroll);
+            Node actual = dashboardLayout.getContenido();
+            if (actual != null && actual.getScene() != null) {
+                String css = getClass().getResource("/style/almacen.css").toExternalForm();
+                if (!actual.getScene().getStylesheets().contains(css)) {
+                    actual.getScene().getStylesheets().add(css);
+                }
+            }
+        } else {
+            Scene scene = new Scene(scroll, 950, 650);
+            scene.getStylesheets().add(getClass().getResource("/style/almacen.css").toExternalForm());
+            stage.setTitle("Logistic S.A.C. - Almacenes");
+            stage.setScene(scene);
+            stage.show();
+            stage.centerOnScreen();
+        }
+    }
+
+    private VBox crearPanel(String titulo, Node... elementos) {
+        Label encabezado = new Label(titulo);
+        VBox panel = new VBox(10, encabezado);
+        panel.getStyleClass().add("almacen-panel");
+        panel.getChildren().addAll(elementos);
+        return panel;
     }
 
     private void cargar(TableView<Almacen> tabla, Label mensaje) {
@@ -163,5 +221,9 @@ public class AlmacenView {
         }
     }
 
-
+    private void limpiar(TextField... campos) {
+        for (TextField campo : campos) {
+            campo.clear();
+        }
+    }
 }

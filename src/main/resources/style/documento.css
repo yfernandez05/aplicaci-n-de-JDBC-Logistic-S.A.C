@@ -1,0 +1,172 @@
+
+.documento-contenedor {
+    -fx-background-color: #f4f7fb;
+    -fx-padding: 20;
+}
+.documento-scroll {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: #d5deea;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+}
+.documento-scroll > .viewport {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8px;
+}
+.documento-scroll > .corner {
+    -fx-background-color: #f1f5f9;
+}
+.documento-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #243b53;
+}
+.documento-subtitulo {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}
+.documento-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #e1e8f0;
+    -fx-border-radius: 10;
+    -fx-padding: 18;
+}
+.documento-panel .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+}
+.documento-panel .text-field,
+.documento-panel .combo-box,
+.documento-panel .date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-pref-height: 34;
+}
+.documento-panel .text-field:focused,
+.documento-panel .combo-box:focused,
+.documento-panel .date-picker:focused {
+    -fx-border-color: #3b82f6;
+}
+.documento-panel .button {
+    -fx-background-color: #e8eef6;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 9 12;
+    -fx-cursor: hand;
+}
+.documento-panel .button:hover {
+    -fx-background-color: #d8e3f1;
+}
+.documento-registrar {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 7;
+    -fx-padding: 11 16;
+    -fx-cursor: hand;
+}
+.documento-registrar:hover {
+    -fx-background-color: #1d4ed8;
+}
+.documento-volver {
+    -fx-background-color: #e8eef6;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 9 12;
+    -fx-cursor: hand;
+}
+.documento-volver:hover {
+    -fx-background-color: #d8e3f1;
+}
+.documento-panel .table-view,
+.documento-tabla {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+.documento-panel .table-view .column-header-background,
+.documento-tabla .column-header-background {
+    -fx-background-color: #edf2f7;
+}
+.documento-panel .table-view .column-header .label,
+.documento-tabla .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+.documento-panel .table-view .table-cell,
+.documento-tabla .table-cell {
+    -fx-padding: 7;
+    -fx-text-fill: #334155;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+}
+.documento-panel .table-view .table-row-cell:selected,
+.documento-tabla .table-row-cell:selected {
+    -fx-background-color: #dbeafe;
+}
+.documento-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}
+
+
+.inicio-tarjetas {
+    -fx-padding: 0;
+}
+
+/* Tarjetas informativas */
+.inicio-tarjeta-indicador {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #dbe4f0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+
+.inicio-tarjeta-titulo {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17365d;
+}
+
+.inicio-tarjeta-descripcion {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748b;
+}
+
+/* Paneles */
+.inicio-tarjeta {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #dbe4f0;
+    -fx-border-radius: 10px;
+}
+
+.inicio-titulo-panel {
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17365d;
+}
+
+.inicio-descripcion-panel,
+.inicio-indicacion {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+    -fx-wrap-text: true;
+}
+
+.inicio-rol {
+    -fx-background-color: #e7edf6;
+    -fx-background-radius: 6px;
+    -fx-padding: 9px 12px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17365d;
+}

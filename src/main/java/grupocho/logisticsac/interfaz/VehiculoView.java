@@ -1,3 +1,4 @@
+
 package grupocho.logisticsac.interfaz;
 
 import grupocho.logisticsac.dao.VehiculoDAO;
@@ -5,33 +6,49 @@ import grupocho.logisticsac.modelo.Usuario;
 import grupocho.logisticsac.modelo.Vehiculo;
 import grupocho.logisticsac.repository.VehiculoRepository;
 import grupocho.logisticsac.service.VehiculoService;
+
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import java.sql.SQLException;
 
 public class VehiculoView {
+
     private final Usuario usuario;
+    private final DashboardLayout dashboardLayout;
     private final VehiculoService vehiculoService;
 
     public VehiculoView(Usuario usuario) {
+        this(usuario, null);
+    }
+
+    public VehiculoView(Usuario usuario, DashboardLayout dashboardLayout) {
         this.usuario = usuario;
+        this.dashboardLayout = dashboardLayout;
+
         VehiculoRepository repository = new VehiculoDAO();
         this.vehiculoService = new VehiculoService(repository);
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("VEHÍCULOS");
+
+        Label subtitulo = new Label("Gestión de vehículos y capacidad de carga");
+        subtitulo.getStyleClass().add("vehiculo-subtitulo");
 
         TextField txtPlaca = new TextField();
         txtPlaca.setPromptText("Placa");
 
         TextField txtTipo = new TextField();
-        txtTipo.setPromptText("Tipo");
+        txtTipo.setPromptText("Tipo de vehículo");
 
         TextField txtCapacidad = new TextField();
         txtCapacidad.setPromptText("Capacidad de carga");
@@ -43,23 +60,18 @@ public class VehiculoView {
         txtEstado.setPromptText("Estado");
 
         Button btnRegistrar = new Button("Registrar");
+        btnRegistrar.getStyleClass().add("vehiculo-registrar");
+
         Button btnActualizar = new Button("Actualizar");
         Button btnEliminar = new Button("Eliminar");
+
         Button btnVolver = new Button("Volver");
+        btnVolver.getStyleClass().add("vehiculo-volver");
 
         TableView<Vehiculo> tabla = new TableView<>();
-
-        tabla.setOnMouseClicked(event -> {
-            Vehiculo seleccionado = tabla.getSelectionModel().getSelectedItem();
-
-            if (seleccionado != null) {
-                txtPlaca.setText(seleccionado.getPlaca());
-                txtTipo.setText(seleccionado.getTipo());
-                txtCapacidad.setText(String.valueOf(seleccionado.getCapacidadCarga()));
-                txtCondicion.setText(seleccionado.getCondicion());
-                txtEstado.setText(seleccionado.getEstado());
-            }
-        });
+        tabla.getStyleClass().add("vehiculo-tabla");
+        tabla.setPrefHeight(280);
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Vehiculo, String> placa = new TableColumn<>("Placa");
         placa.setCellValueFactory(new PropertyValueFactory<>("placa"));
@@ -79,7 +91,20 @@ public class VehiculoView {
         tabla.getColumns().addAll(placa, tipo, capacidad, condicion, estado);
 
         Label mensaje = new Label();
-        cargar(tabla, mensaje);
+        mensaje.getStyleClass().add("vehiculo-mensaje");
+        mensaje.setWrapText(true);
+
+        tabla.setOnMouseClicked(event -> {
+            Vehiculo seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+            if (seleccionado != null) {
+                txtPlaca.setText(seleccionado.getPlaca());
+                txtTipo.setText(seleccionado.getTipo());
+                txtCapacidad.setText(String.valueOf(seleccionado.getCapacidadCarga()));
+                txtCondicion.setText(seleccionado.getCondicion());
+                txtEstado.setText(seleccionado.getEstado());
+            }
+        });
 
         btnRegistrar.setOnAction(event -> {
             try {
@@ -93,14 +118,10 @@ public class VehiculoView {
 
                 vehiculoService.registrar(vehiculo);
                 cargar(tabla, mensaje);
-
-                txtPlaca.clear();
-                txtTipo.clear();
-                txtCapacidad.clear();
-                txtCondicion.clear();
-                txtEstado.clear();
+                limpiar(txtPlaca, txtTipo, txtCapacidad,txtCondicion, txtEstado);
 
                 mensaje.setText("Vehículo registrado correctamente.");
+
             } catch (NumberFormatException e) {
                 mensaje.setText("La capacidad debe ser numérica.");
             } catch (IllegalArgumentException e) {
@@ -127,6 +148,7 @@ public class VehiculoView {
 
                 vehiculoService.actualizar(seleccionado);
                 cargar(tabla, mensaje);
+
                 mensaje.setText("Vehículo actualizado correctamente.");
 
             } catch (NumberFormatException e) {
@@ -150,11 +172,7 @@ public class VehiculoView {
                 vehiculoService.eliminar(seleccionado.getIdVehiculo());
                 cargar(tabla, mensaje);
 
-                txtPlaca.clear();
-                txtTipo.clear();
-                txtCapacidad.clear();
-                txtCondicion.clear();
-                txtEstado.clear();
+                limpiar(txtPlaca, txtTipo, txtCapacidad,txtCondicion, txtEstado);
 
                 mensaje.setText("Vehículo eliminado correctamente.");
 
@@ -163,30 +181,93 @@ public class VehiculoView {
             }
         });
 
-        btnVolver.setOnAction(event -> new DashboardView(usuario).mostrar(stage));
+        btnVolver.setOnAction(event -> {
+            if (dashboardLayout != null) {
+                dashboardLayout.mostrarContenido("Panel principal", null);
+            } else {
+                new DashboardView(usuario).mostrar(stage);
+            }
+        });
 
-        VBox layout = new VBox(
-                10,
-                titulo,
-                txtPlaca,
-                txtTipo,
-                txtCapacidad,
-                txtCondicion,
-                txtEstado,
-                btnRegistrar,
-                btnActualizar,
-                btnEliminar,
-                tabla,
-                mensaje,
-                btnVolver
+        // Formulario distribuido en dos columnas
+        GridPane formulario = new GridPane();
+        formulario.setHgap(12);
+        formulario.setVgap(10);
+        formulario.setMaxWidth(750);
+
+        formulario.add(new Label("Placa:"), 0, 0);
+        formulario.add(txtPlaca, 1, 0);
+
+        formulario.add(new Label("Tipo:"), 2, 0);
+        formulario.add(txtTipo, 3, 0);
+
+        formulario.add(new Label("Capacidad de carga:"), 0, 1);
+        formulario.add(txtCapacidad, 1, 1);
+
+        formulario.add(new Label("Condición:"), 2, 1);
+        formulario.add(txtCondicion, 3, 1);
+
+        formulario.add(new Label("Estado:"), 0, 2);
+        formulario.add(txtEstado, 1, 2);
+
+        GridPane.setHgrow(txtPlaca, Priority.ALWAYS);
+        GridPane.setHgrow(txtTipo, Priority.ALWAYS);
+        GridPane.setHgrow(txtCapacidad, Priority.ALWAYS);
+        GridPane.setHgrow(txtCondicion, Priority.ALWAYS);
+        GridPane.setHgrow(txtEstado, Priority.ALWAYS);
+
+        VBox panelFormulario = crearPanel("DATOS DEL VEHÍCULO", formulario);
+
+        HBox botones = new HBox(8, btnRegistrar, btnActualizar, btnEliminar);
+
+        VBox panelTabla = crearPanel("VEHÍCULOS REGISTRADOS", tabla);
+
+        VBox contenido = new VBox(
+                12, subtitulo,
+                panelFormulario, botones,
+                panelTabla, mensaje, btnVolver
         );
 
-        layout.setPadding(new Insets(20));
+        contenido.getStyleClass().add("vehiculo-contenedor");
+        contenido.setPadding(new Insets(16));
 
-        Scene scene = new Scene(layout, 800, 550);
-        stage.setTitle("Logistic S.A.C. - Vehículos");
-        stage.setScene(scene);
-        stage.show();
+        ScrollPane scroll = new ScrollPane(contenido);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("vehiculo-scroll");
+
+        cargar(tabla, mensaje);
+
+        if (dashboardLayout != null) {
+            dashboardLayout.mostrarContenido("Vehículos", scroll);
+
+            Node actual = dashboardLayout.getContenido();
+
+            if (actual != null && actual.getScene() != null) {
+                String css = getClass().getResource("/style/vehiculo.css").toExternalForm();
+
+                if (!actual.getScene().getStylesheets().contains(css)) {
+                    actual.getScene().getStylesheets().add(css);
+                }
+            }
+        } else {
+            Scene scene = new Scene(scroll, 950, 700);
+            scene.getStylesheets().add(getClass().getResource("/style/vehiculo.css").toExternalForm());
+            stage.setTitle("Logistic S.A.C. - Vehículos");
+            stage.setScene(scene);
+            stage.show();
+            stage.centerOnScreen();
+        }
+    }
+
+    private VBox crearPanel(String titulo, Node... elementos) {
+        Label encabezado = new Label(titulo);
+
+        VBox panel = new VBox(10, encabezado);
+        panel.getStyleClass().add("vehiculo-panel");
+        panel.getChildren().addAll(elementos);
+
+        return panel;
     }
 
     private void cargar(TableView<Vehiculo> tabla, Label mensaje) {
@@ -194,6 +275,12 @@ public class VehiculoView {
             tabla.setItems(FXCollections.observableArrayList(vehiculoService.listar()));
         } catch (SQLException e) {
             mensaje.setText("Error al cargar vehículos.");
+        }
+    }
+
+    private void limpiar(TextField... campos) {
+        for (TextField campo : campos) {
+            campo.clear();
         }
     }
 }

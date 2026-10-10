@@ -1,0 +1,114 @@
+.almacen-contenedor {
+    -fx-background-color: #f4f7fb;
+    -fx-padding: 20;
+}
+
+.almacen-scroll {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: #d5deea;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+}
+
+.almacen-scroll > .viewport {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8px;
+}
+
+.almacen-scroll > .corner {
+    -fx-background-color: #f1f5f9;
+}
+
+.almacen-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #243b53;
+}
+
+.almacen-subtitulo {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}
+
+.almacen-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #e1e8f0;
+    -fx-border-radius: 10;
+    -fx-padding: 18;
+}
+
+.almacen-panel .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+}
+
+.almacen-panel .text-field {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-pref-height: 34;
+    -fx-pref-width: 200;
+    -fx-max-width: 280;
+}
+
+.almacen-panel .text-field:focused {
+    -fx-border-color: #3b82f6;
+}
+
+
+
+
+.almacen-registrar, .almacen-registrar, .almacen-volver,.almacen-eliminar,.almacen-actualizar{
+    -fx-background-color: #e7edf6;
+    -fx-text-fill: #17365d;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 18;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.almacen-registrar:hover, .almacen-registrar:hover, .almacen-volver:hover,.almacen-eliminar:hover,
+.almacen-actualizar:hover{
+    -fx-background-color: #d5e1f1;
+}
+
+
+.almacen-panel .table-view {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.almacen-panel .table-view .column-header-background {
+    -fx-background-color: #edf2f7;
+}
+
+.almacen-panel .table-view .column-header {
+    -fx-background-color: #edf2f7;
+}
+
+.almacen-panel .table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.almacen-panel .table-view .table-cell {
+    -fx-padding: 7;
+    -fx-text-fill: #334155;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+}
+
+.almacen-panel .table-view .table-row-cell:selected {
+    -fx-background-color: #dbeafe;
+}
+
+.almacen-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}

@@ -38,6 +38,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.sql.SQLException;
@@ -50,9 +51,16 @@ public class TrasladoView {
     private final VehiculoService vehiculoService;
     private final ConductorService conductorService;
     private final TipoDocumentoService tipoDocumentoService;
-
+    private final DashboardLayout dashboardLayout;
+    // Constructor para mantener compatibilidad con las llamadas existentes.
     public TrasladoView(Usuario usuario) {
+        this(usuario, null);
+    }
+
+    // Constructor para mostrar el módulo dentro del dashboard.
+    public TrasladoView(Usuario usuario, DashboardLayout dashboardLayout) {
         this.usuario = usuario;
+        this.dashboardLayout = dashboardLayout;
 
         TrasladoRepository trasladoRepository = new TrasladoDAO();
         DocumentoRepository documentoRepository = new DocumentoDAO();
@@ -61,8 +69,9 @@ public class TrasladoView {
         VehiculoRepository vehiculoRepository = new VehiculoDAO();
         ConductorRepository conductorRepository = new ConductorDAO();
         TipoDocumentoRepository tipoDocumentoRepository = new TipoDocumentoDAO();
-
-        this.trasladoService = new TrasladoService(trasladoRepository, documentoRepository);
+        this.trasladoService = new TrasladoService(
+                trasladoRepository, documentoRepository
+        );
         this.almacenService = new AlmacenService(almacenRepository);
         this.productoService = new ProductoService(productoRepository);
         this.vehiculoService = new VehiculoService(vehiculoRepository);
@@ -71,8 +80,12 @@ public class TrasladoView {
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("REGISTRAR TRASLADO");
 
+        // Título
+        Label titulo = new Label("REGISTRAR TRASLADO");
+        titulo.getStyleClass().add("traslado-titulo");
+
+        // Datos generales
         TextField txtCodigo = new TextField();
         txtCodigo.setPromptText("Código del traslado");
 
@@ -81,19 +94,24 @@ public class TrasladoView {
 
         ComboBox<Almacen> cmbOrigen = new ComboBox<>();
         cmbOrigen.setPromptText("Seleccione almacén");
+        cmbOrigen.setMaxWidth(Double.MAX_VALUE);
 
         ComboBox<Almacen> cmbDestino = new ComboBox<>();
         cmbDestino.setPromptText("Seleccione almacén");
+        cmbDestino.setMaxWidth(Double.MAX_VALUE);
 
         ComboBox<Vehiculo> cmbVehiculo = new ComboBox<>();
         cmbVehiculo.setPromptText("Seleccione vehículo");
+        cmbVehiculo.setMaxWidth(Double.MAX_VALUE);
 
         ComboBox<Conductor> cmbConductor = new ComboBox<>();
         cmbConductor.setPromptText("Seleccione conductor");
+        cmbConductor.setMaxWidth(Double.MAX_VALUE);
 
-        // productos del traslado
+        // Productos
         ComboBox<Producto> cmbProducto = new ComboBox<>();
         cmbProducto.setPromptText("Seleccione producto");
+        cmbProducto.setMaxWidth(Double.MAX_VALUE);
 
         Spinner<Double> spCantidad = new Spinner<>(1.0, 10000.0, 1.0, 1.0);
         spCantidad.setPrefWidth(90);
@@ -104,6 +122,7 @@ public class TrasladoView {
         ObservableList<DetalleTraslado> detalles = FXCollections.observableArrayList();
         TableView<DetalleTraslado> tablaDetalles = new TableView<>(detalles);
         tablaDetalles.setPrefHeight(150);
+        tablaDetalles.setMinHeight(120);
 
         TableColumn<DetalleTraslado, String> colProducto = new TableColumn<>("Producto");
         colProducto.setCellValueFactory(data ->
@@ -116,20 +135,19 @@ public class TrasladoView {
         tablaDetalles.getColumns().addAll(colProducto, colCantidad);
         tablaDetalles.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // documentos del traslado (guia de remision, orden de traslado, etc.)
+        // Documentos
         ComboBox<TipoDocumento> cmbTipoDocumento = new ComboBox<>();
         cmbTipoDocumento.setPromptText("Tipo de documento");
+        cmbTipoDocumento.setMaxWidth(Double.MAX_VALUE);
 
         TextField txtNumeroDocumento = new TextField();
-        txtNumeroDocumento.setPromptText("Número");
+        txtNumeroDocumento.setPromptText("Número de documento");
 
         DatePicker dpEmision = new DatePicker();
         dpEmision.setPromptText("Emisión");
-        dpEmision.setPrefWidth(130);
 
         DatePicker dpVencimiento = new DatePicker();
         dpVencimiento.setPromptText("Vencimiento");
-        dpVencimiento.setPrefWidth(130);
 
         Button btnAgregarDocumento = new Button("Agregar");
         Button btnQuitarDocumento = new Button("Quitar");
@@ -138,41 +156,69 @@ public class TrasladoView {
         TableView<Documento> tablaDocumentos = TablaDocumentos.crear();
         tablaDocumentos.setItems(documentos);
         tablaDocumentos.setPrefHeight(150);
+        tablaDocumentos.setMinHeight(120);
 
+        // Botones principales
         Button btnRegistrar = new Button("Registrar traslado");
+        btnRegistrar.getStyleClass().add("traslado-registrar");
+
         Button btnVolver = new Button("Volver");
+        btnVolver.getStyleClass().add("traslado-volver");
 
         Label mensaje = new Label();
         mensaje.setWrapText(true);
+        mensaje.getStyleClass().add("traslado-mensaje");
 
+        // Formulario general
         GridPane formulario = new GridPane();
         formulario.setHgap(10);
-        formulario.setVgap(10);
+        formulario.setVgap(12);
+        formulario.getStyleClass().add("traslado-formulario");
 
         formulario.add(new Label("Código:"), 0, 0);
         formulario.add(txtCodigo, 1, 0);
+
         formulario.add(new Label("Fecha programada:"), 0, 1);
         formulario.add(fechaProgramada, 1, 1);
+
         formulario.add(new Label("Origen:"), 0, 2);
         formulario.add(cmbOrigen, 1, 2);
+
         formulario.add(new Label("Destino:"), 0, 3);
         formulario.add(cmbDestino, 1, 3);
+
         formulario.add(new Label("Vehículo:"), 0, 4);
         formulario.add(cmbVehiculo, 1, 4);
+
         formulario.add(new Label("Conductor:"), 0, 5);
         formulario.add(cmbConductor, 1, 5);
 
+        // Distribución del formulario
+        GridPane.setHgrow(txtCodigo, Priority.ALWAYS);
+        GridPane.setHgrow(fechaProgramada, Priority.ALWAYS);
+        GridPane.setHgrow(cmbOrigen, Priority.ALWAYS);
+        GridPane.setHgrow(cmbDestino, Priority.ALWAYS);
+        GridPane.setHgrow(cmbVehiculo, Priority.ALWAYS);
+        GridPane.setHgrow(cmbConductor, Priority.ALWAYS);
+
+        txtCodigo.setMaxWidth(Double.MAX_VALUE);
+        fechaProgramada.setMaxWidth(Double.MAX_VALUE);
+
+        // Cargar datos desde la base de datos
         try {
             cmbOrigen.getItems().addAll(almacenService.listar());
             cmbDestino.getItems().addAll(almacenService.listar());
             cmbVehiculo.getItems().addAll(vehiculoService.listar());
             cmbConductor.getItems().addAll(conductorService.listar());
             cmbProducto.getItems().addAll(productoService.listar());
+
             cmbTipoDocumento.getItems().addAll(tipoDocumentoService.listarPorAmbito(AmbitoDocumento.TRASLADO));
+
         } catch (SQLException e) {
             mensaje.setText("No se pudieron cargar los datos de la base de datos.");
         }
 
+        // Agregar producto
         btnAgregarProducto.setOnAction(event -> {
             Producto producto = cmbProducto.getValue();
 
@@ -194,10 +240,12 @@ public class TrasladoView {
             }
 
             detalles.add(new DetalleTraslado(producto, spCantidad.getValue()));
+
             cmbProducto.setValue(null);
             mensaje.setText("");
         });
 
+        // Quitar producto
         btnQuitarProducto.setOnAction(event -> {
             DetalleTraslado seleccionado = tablaDetalles.getSelectionModel().getSelectedItem();
 
@@ -207,9 +255,11 @@ public class TrasladoView {
             }
 
             detalles.remove(seleccionado);
+            mensaje.setText("");
         });
 
         btnAgregarDocumento.setOnAction(event -> {
+
             if (cmbTipoDocumento.getValue() == null) {
                 mensaje.setText("Seleccione el tipo de documento.");
                 return;
@@ -221,12 +271,12 @@ public class TrasladoView {
             }
 
             if (dpEmision.getValue() == null || dpVencimiento.getValue() == null) {
-                mensaje.setText("Seleccione la fecha de emisión y de vencimiento del documento.");
+                mensaje.setText( "Seleccione la fecha de emisión y vencimiento." );
                 return;
             }
 
             if (dpVencimiento.getValue().isBefore(dpEmision.getValue())) {
-                mensaje.setText("La fecha de vencimiento no puede ser anterior a la de emisión.");
+                mensaje.setText("El vencimiento no puede ser anterior a la emisión.");
                 return;
             }
 
@@ -254,11 +304,12 @@ public class TrasladoView {
             }
 
             documentos.remove(seleccionado);
+            mensaje.setText("");
         });
 
         btnRegistrar.setOnAction(event -> {
             try {
-                if (txtCodigo.getText() == null || txtCodigo.getText().isBlank()) {
+                if (txtCodigo.getText().isBlank()) {
                     mensaje.setText("Ingrese el código del traslado.");
                     return;
                 }
@@ -294,7 +345,7 @@ public class TrasladoView {
                 }
 
                 if (detalles.isEmpty()) {
-                    mensaje.setText("Agregue al menos un producto al traslado.");
+                    mensaje.setText( "Agregue al menos un producto al traslado.");
                     return;
                 }
 
@@ -336,31 +387,107 @@ public class TrasladoView {
         });
 
         btnVolver.setOnAction(event -> {
-            DashboardView dashboardView = new DashboardView(usuario);
-            dashboardView.mostrar(stage);
+            if (dashboardLayout != null) {
+                dashboardLayout.mostrarContenido("Panel principal", null);
+            } else {
+                new DashboardView(usuario).mostrar(stage);
+            }
         });
 
-        VBox datos = new VBox(15, titulo, formulario, btnRegistrar, mensaje, btnVolver);
+        VBox datos = new VBox(
+                15,
+                titulo,
+                formulario,
+                btnRegistrar,
+                mensaje,
+                btnVolver
+        );
         datos.setPrefWidth(330);
+        datos.setMinWidth(290);
+        datos.getStyleClass().add("traslado-panel");
+
+        // Panel de productos y documentos
+        Label tituloProductos = new Label("Productos del traslado");
+        Label tituloDocumentos = new Label("Documentos del traslado");
+
+        HBox accionesProductos = new HBox(
+                8,
+                cmbProducto,
+                spCantidad,
+                btnAgregarProducto,
+                btnQuitarProducto
+        );
+
+        HBox.setHgrow(cmbProducto, Priority.ALWAYS);
+
+        HBox datosDocumento = new HBox(
+                8,
+                cmbTipoDocumento,
+                txtNumeroDocumento
+        );
+
+        HBox.setHgrow(cmbTipoDocumento, Priority.ALWAYS);
+        HBox.setHgrow(txtNumeroDocumento, Priority.ALWAYS);
+
+        HBox fechasDocumento = new HBox(
+                8,
+                dpEmision,
+                dpVencimiento,
+                btnAgregarDocumento,
+                btnQuitarDocumento
+        );
 
         VBox listas = new VBox(
-                10,
-                new Label("Productos del traslado:"),
-                new HBox(10, cmbProducto, spCantidad, btnAgregarProducto, btnQuitarProducto),
+                12,
+                tituloProductos,
+                accionesProductos,
                 tablaDetalles,
-                new Label("Documentos del traslado:"),
-                new HBox(10, cmbTipoDocumento, txtNumeroDocumento),
-                new HBox(10, dpEmision, dpVencimiento, btnAgregarDocumento, btnQuitarDocumento),
+                tituloDocumentos,
+                datosDocumento,
+                fechasDocumento,
                 tablaDocumentos
         );
 
-        HBox layout = new HBox(25, datos, listas);
-        layout.setPadding(new Insets(25));
+        listas.setMinWidth(0);
+        listas.getStyleClass().add("traslado-panel");
 
-        Scene scene = new Scene(layout, 1000, 620);
-        stage.setTitle("Logistic S.A.C. - Registrar traslado");
-        stage.setScene(scene);
-        stage.show();
-        stage.centerOnScreen();
+        HBox formularioTraslado = new HBox(18, datos, listas);
+        formularioTraslado.setPadding(new Insets(10));
+        formularioTraslado.getStyleClass().add("traslado-contenedor");
+
+        HBox.setHgrow(listas, Priority.ALWAYS);
+
+        if (dashboardLayout != null) {
+            Scene scene = stage.getScene();
+            var css = getClass().getResource("/style/traslado.css");
+            if (css != null && !scene.getStylesheets().contains( css.toExternalForm())) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            ScrollPane scroll = new ScrollPane(formularioTraslado);
+            scroll.setFitToWidth(true);
+            scroll.setPannable(true);
+            scroll.getStyleClass().add("traslado-scroll");
+
+            dashboardLayout.mostrarContenido("Registrar traslado",scroll);
+
+        } else {
+
+            ScrollPane scroll = new ScrollPane(formularioTraslado);
+            scroll.setFitToWidth(true);
+            scroll.setPannable(true);
+
+            Scene scene = new Scene(scroll, 1100, 700);
+
+            var css = getClass().getResource("/style/traslado.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            stage.setTitle("Logistic S.A.C. - Registrar traslado");
+            stage.setScene(scene);
+            stage.show();
+            stage.centerOnScreen();
+        }
     }
 }

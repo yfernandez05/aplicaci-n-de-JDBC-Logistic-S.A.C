@@ -83,6 +83,9 @@ public class InspeccionDAO implements InspeccionRepository {
                     inspeccion.setTraslado(traslado);
                     inspeccion.setVigilante(vigilante);
 
+                    EvidenciaDAO evidenciaDAO = new EvidenciaDAO();
+                    inspeccion.setEvidencias(evidenciaDAO.listarPorInspeccion(conexion, inspeccion));
+
                     return inspeccion;
                 }
             }

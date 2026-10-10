@@ -1,0 +1,90 @@
+.usuario-contenedor {
+    -fx-background-color: #f0f4fa;
+    -fx-spacing: 15;
+}
+
+.usuario-titulo {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #202b3c;
+}
+
+.usuario-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #dce4ef;
+    -fx-border-radius: 10;
+    -fx-padding: 18;
+    -fx-spacing: 12;
+}
+
+.usuario-panel-titulo {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17365d;
+}
+
+.usuario-tabla {
+    -fx-background-color: white;
+    -fx-background-radius: 7;
+    -fx-border-color: #dce4ef;
+    -fx-border-radius: 7;
+    -fx-padding: 2;
+}
+
+.usuario-tabla .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #f5f5f5, #d8d8d8);
+}
+
+.usuario-tabla .column-header,
+.usuario-tabla .filler {
+    -fx-background-color: transparent;
+    -fx-size: 38px;
+    -fx-border-color: #c9c9c9;
+}
+
+.usuario-tabla .column-header .label {
+    -fx-text-fill: #17365d;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 9;
+}
+
+.usuario-tabla .table-row-cell {
+    -fx-cell-size: 36px;
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e7ebf1 transparent;
+}
+
+.usuario-tabla .table-row-cell:odd {
+    -fx-background-color: #fafafa;
+}
+
+.usuario-tabla .table-row-cell:selected {
+    -fx-background-color: #dce8f8;
+}
+
+.usuario-tabla .table-cell {
+    -fx-text-fill: #263b59;
+    -fx-font-size: 12px;
+    -fx-padding: 7;
+}
+
+.usuario-mensaje {
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+}
+
+.usuario-boton-secundario {
+    -fx-background-color: #e7edf6;
+    -fx-text-fill: #17365d;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.usuario-boton-secundario:hover {
+    -fx-background-color: #d5e1f1;
+}

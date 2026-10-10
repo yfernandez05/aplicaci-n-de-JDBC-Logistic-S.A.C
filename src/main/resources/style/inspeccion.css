@@ -1,0 +1,128 @@
+
+.inspeccion-contenedor {
+    -fx-background-color: #f4f7fb;
+    -fx-spacing: 16;
+}
+
+.inspeccion-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e3a5f;
+}
+
+.inspeccion-subtitulo {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748b;
+}
+
+.inspeccion-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 16px;
+    -fx-spacing: 10px;
+}
+
+.inspeccion-panel > .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.inspeccion-contenedor .text-field,
+.inspeccion-contenedor .combo-box {
+    -fx-pref-height: 35px;
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 12px;
+}
+
+.inspeccion-contenedor .text-field:focused,
+.inspeccion-contenedor .combo-box:focused {
+    -fx-border-color: #3b82f6;
+}
+
+.inspeccion-contenedor .radio-button,
+.inspeccion-contenedor .check-box {
+    -fx-font-size: 12px;
+    -fx-text-fill: #334155;
+}
+
+.inspeccion-contenedor .list-view,
+.inspeccion-contenedor .table-view {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 12px;
+}
+
+.inspeccion-contenedor .list-cell {
+    -fx-padding: 8px;
+}
+
+.inspeccion-contenedor .table-view .column-header-background {
+    -fx-background-color: #edf2f7;
+}
+
+.inspeccion-contenedor .table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.inspeccion-contenedor .button {
+    -fx-background-color: #e8eef6;
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px 14px;
+    -fx-cursor: hand;
+}
+
+.inspeccion-contenedor .button:hover {
+    -fx-background-color: #d6e3f3;
+}
+
+.inspeccion-contenedor .inspeccion-registrar {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+
+.inspeccion-contenedor .inspeccion-registrar:hover {
+    -fx-background-color: #1d4ed8;
+}
+
+.inspeccion-contenedor .inspeccion-volver {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+}
+
+.inspeccion-informacion,
+.inspeccion-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+    -fx-wrap-text: true;
+}
+.inspeccion-scroll {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: #d5deea;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+}
+
+.inspeccion-scroll > .viewport {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8px;
+}
+
+.inspeccion-scroll > .corner {
+    -fx-background-color: #f1f5f9;
+}

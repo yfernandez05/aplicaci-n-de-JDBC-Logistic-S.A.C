@@ -1,0 +1,110 @@
+
+.root {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+}
+
+.login-fondo {
+    -fx-background-color: #F1F5FA;
+    -fx-padding: 30px;
+}
+
+.login-tarjeta {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #DFE6EF;
+    -fx-border-width: 1px;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    -fx-padding: 34px;
+    -fx-spacing: 17px;
+    -fx-max-width: 440px;
+    -fx-effect: dropshadow(gaussian, #24364B12, 20, 0.12, 0, 5);
+}
+
+.login-titulo {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2F4566;
+}
+
+.login-subtitulo {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34445D;
+}
+
+.login-descripcion {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7B8799;
+}
+
+.login-etiqueta {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #46566D;
+}
+
+.login-campo {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8E1EC;
+    -fx-border-width: 1px;
+    -fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+    -fx-padding: 11px 12px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #34445D;
+    -fx-prompt-text-fill: #9AA6B6;
+}
+
+.login-campo:focused {
+    -fx-border-color: #7D9BCB;
+    -fx-background-color: #FCFDFF;
+}
+
+.login-boton {
+    -fx-background-color: #6688BE;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.login-boton:hover {
+    -fx-background-color: #5578AE;
+}
+
+.login-boton:pressed {
+    -fx-background-color: #456795;
+}
+
+
+.login-pie {
+    -fx-font-size: 11px;
+    -fx-text-fill: #8995A6;
+}
+
+.login-etiqueta {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #46566D;
+}
+
+.login-descripcion {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7B8799;
+}
+
+.login-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #B94343;
+    -fx-background-color: #FFF1F1;
+    -fx-border-color: #F2D2D2;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 9px 11px;
+    -fx-wrap-text: true;
+}
+

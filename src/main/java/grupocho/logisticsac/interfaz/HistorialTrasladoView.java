@@ -41,23 +41,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 public class HistorialTrasladoView {
+
     private final Usuario usuario;
     private final TrasladoService trasladoService;
     private final VehiculoService vehiculoService;
@@ -68,9 +63,16 @@ public class HistorialTrasladoView {
     private final InspeccionService inspeccionService;
     private final PrecintoService precintoService;
     private final RecepcionService recepcionService;
+    private final DashboardLayout dashboardLayout;
 
     public HistorialTrasladoView(Usuario usuario) {
+        this(usuario, null);
+    }
+
+    public HistorialTrasladoView(Usuario usuario, DashboardLayout dashboardLayout) {
         this.usuario = usuario;
+        this.dashboardLayout = dashboardLayout;
+
         TrasladoRepository trasladoRepository = new TrasladoDAO();
         DocumentoRepository documentoRepository = new DocumentoDAO();
         PrecintoRepository precintoRepository = new PrecintoDAO();
@@ -88,38 +90,55 @@ public class HistorialTrasladoView {
 
     public void mostrar(Stage stage) {
         Label titulo = new Label("HISTORIAL DE TRASLADOS");
+        titulo.getStyleClass().add("historial-titulo");
 
         TextField txtCodigo = new TextField();
         txtCodigo.setPromptText("Código");
+        txtCodigo.getStyleClass().add("historial-campo");
 
         DatePicker fechaDesde = new DatePicker();
         fechaDesde.setPromptText("Desde");
+        fechaDesde.getStyleClass().add("historial-campo");
 
         DatePicker fechaHasta = new DatePicker();
         fechaHasta.setPromptText("Hasta");
+        fechaHasta.getStyleClass().add("historial-campo");
 
         ComboBox<EstadoTraslado> cmbEstado = new ComboBox<>();
         cmbEstado.getItems().addAll(EstadoTraslado.values());
         cmbEstado.setPromptText("Estado");
+        cmbEstado.getStyleClass().add("historial-campo");
 
         ComboBox<Vehiculo> cmbVehiculo = new ComboBox<>();
         cmbVehiculo.setPromptText("Vehículo");
+        cmbVehiculo.getStyleClass().add("historial-campo");
 
         ComboBox<Conductor> cmbConductor = new ComboBox<>();
         cmbConductor.setPromptText("Conductor");
+        cmbConductor.getStyleClass().add("historial-campo");
 
         ComboBox<Usuario> cmbVigilante = new ComboBox<>();
         cmbVigilante.setPromptText("Vigilante");
+        cmbVigilante.getStyleClass().add("historial-campo");
 
         ComboBox<Almacen> cmbAlmacen = new ComboBox<>();
         cmbAlmacen.setPromptText("Almacén");
+        cmbAlmacen.getStyleClass().add("historial-campo");
 
         Button btnBuscar = new Button("Buscar");
+        btnBuscar.getStyleClass().add("historial-boton");
+
         Button btnLimpiar = new Button("Limpiar");
+        btnLimpiar.getStyleClass().add("historial-boton-secundario");
+
         Button btnDetalle = new Button("Ver detalle");
+        btnDetalle.getStyleClass().add("historial-boton");
 
         HBox filtros = new HBox(10, txtCodigo, fechaDesde, fechaHasta, cmbEstado);
+        filtros.getStyleClass().add("historial-filtros");
+
         HBox filtros2 = new HBox(10, cmbVehiculo, cmbConductor, cmbVigilante, cmbAlmacen, btnBuscar, btnLimpiar);
+        filtros2.getStyleClass().add("historial-filtros");
 
         TableView<Traslado> tabla = new TableView<>();
 
@@ -141,8 +160,7 @@ public class HistorialTrasladoView {
                         cellData.getValue().getAlmacenOrigen() != null
                                 ? cellData.getValue().getAlmacenOrigen().getNombre()
                                 : ""
-                )
-        );
+                ));
 
         TableColumn<Traslado, String> destino = new TableColumn<>("Destino");
         destino.setCellValueFactory(cellData ->
@@ -150,8 +168,7 @@ public class HistorialTrasladoView {
                         cellData.getValue().getAlmacenDestino() != null
                                 ? cellData.getValue().getAlmacenDestino().getNombre()
                                 : ""
-                )
-        );
+                ));
 
         TableColumn<Traslado, String> vehiculo = new TableColumn<>("Vehículo");
         vehiculo.setCellValueFactory(cellData ->
@@ -159,8 +176,7 @@ public class HistorialTrasladoView {
                         cellData.getValue().getVehiculo() != null
                                 ? cellData.getValue().getVehiculo().getPlaca()
                                 : ""
-                )
-        );
+                ));
 
         TableColumn<Traslado, String> conductor = new TableColumn<>("Conductor");
         conductor.setCellValueFactory(cellData ->
@@ -168,8 +184,7 @@ public class HistorialTrasladoView {
                         cellData.getValue().getConductor() != null
                                 ? cellData.getValue().getConductor().getNombres()
                                 : ""
-                )
-        );
+                ));
 
         TableColumn<Traslado, String> vigilante = new TableColumn<>("Vigilante");
         vigilante.setCellValueFactory(cellData ->
@@ -177,8 +192,7 @@ public class HistorialTrasladoView {
                         cellData.getValue().getVigilante() != null
                                 ? cellData.getValue().getVigilante().getNombreCompleto()
                                 : ""
-                )
-        );
+                ));
 
         TableColumn<Traslado, String> estado = new TableColumn<>("Estado");
         estado.setCellValueFactory(cellData ->
@@ -186,34 +200,30 @@ public class HistorialTrasladoView {
                         cellData.getValue().getEstado() != null
                                 ? cellData.getValue().getEstado().name()
                                 : ""
-                )
-        );
+                ));
 
         TableColumn<Traslado, String> motivoRechazo = new TableColumn<>("Motivo rechazo");
         motivoRechazo.setCellValueFactory(new PropertyValueFactory<>("motivoRechazo"));
 
         tabla.getColumns().addAll(
-                id,
-                codigo,
-                fechaColumna,
-                origen,
-                destino,
-                vehiculo,
-                conductor,
-                vigilante,
-                estado,
-                motivoRechazo
+                id, codigo, fechaColumna, origen, destino,
+                vehiculo, conductor, vigilante, estado, motivoRechazo
         );
 
         tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tabla.setPrefHeight(230);
+        tabla.getStyleClass().add("historial-tabla");
 
         TextArea txtDetalle = new TextArea();
         txtDetalle.setEditable(false);
         txtDetalle.setPromptText("Seleccione un traslado y presione \"Ver detalle\".");
         txtDetalle.setPrefRowCount(12);
+        txtDetalle.setWrapText(true);
+        txtDetalle.getStyleClass().add("historial-detalle");
 
         Label mensaje = new Label();
+        mensaje.setWrapText(true);
+        mensaje.getStyleClass().add("historial-mensaje");
 
         try {
             cmbVehiculo.getItems().addAll(vehiculoService.listar());
@@ -227,9 +237,7 @@ public class HistorialTrasladoView {
             }
 
             tabla.setItems(
-                    FXCollections.observableArrayList(
-                            trasladoService.listar()
-                    )
+                    FXCollections.observableArrayList(trasladoService.listar())
             );
         } catch (SQLException e) {
             mensaje.setText("Error al cargar el historial.");
@@ -248,12 +256,11 @@ public class HistorialTrasladoView {
                 filtro.setAlmacen(cmbAlmacen.getValue());
 
                 List<Traslado> resultados = trasladoService.buscar(filtro);
-
                 tabla.setItems(FXCollections.observableArrayList(resultados));
                 txtDetalle.clear();
 
                 if (resultados.isEmpty()) {
-                    mensaje.setText("No se encontraron resultados");
+                    mensaje.setText("No se encontraron resultados.");
                 } else {
                     mensaje.setText("Resultados encontrados: " + resultados.size());
                 }
@@ -277,9 +284,7 @@ public class HistorialTrasladoView {
 
             try {
                 tabla.setItems(
-                        FXCollections.observableArrayList(
-                                trasladoService.listar()
-                        )
+                        FXCollections.observableArrayList(trasladoService.listar())
                 );
                 mensaje.setText("");
             } catch (SQLException e) {
@@ -304,13 +309,17 @@ public class HistorialTrasladoView {
         });
 
         Button btnVolver = new Button("Volver");
+        btnVolver.getStyleClass().add("historial-boton-secundario");
 
         btnVolver.setOnAction(event -> {
-            DashboardView dashboardView = new DashboardView(usuario);
-            dashboardView.mostrar(stage);
+            if (dashboardLayout != null) {
+                dashboardLayout.mostrarContenido("Panel principal", null);
+            } else {
+                new DashboardView(usuario).mostrar(stage);
+            }
         });
 
-        VBox layout = new VBox(
+        VBox contenido = new VBox(
                 10,
                 titulo,
                 filtros,
@@ -322,17 +331,43 @@ public class HistorialTrasladoView {
                 btnVolver
         );
 
-        layout.setPadding(new Insets(20));
+        contenido.setPadding(new Insets(20));
+        contenido.getStyleClass().add("historial-contenedor");
 
-        Scene scene = new Scene(layout, 1200, 700);
+        if (dashboardLayout != null) {
+            Scene scene = stage.getScene();
+            var css = getClass().getResource("/style/historial-traslado.css");
 
-        stage.setTitle("Logistic S.A.C. - Historial de traslados");
-        stage.setScene(scene);
-        stage.show();
-        stage.centerOnScreen();
+            if (css != null && !scene.getStylesheets().contains(css.toExternalForm())) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            ScrollPane scroll = new ScrollPane(contenido);
+            scroll.setFitToWidth(true);
+            scroll.setPannable(true);
+            scroll.getStyleClass().add("historial-scroll");
+
+            dashboardLayout.mostrarContenido("Historial de traslados", scroll);
+        } else {
+            ScrollPane scroll = new ScrollPane(contenido);
+            scroll.setFitToWidth(true);
+            scroll.setPannable(true);
+
+            Scene scene = new Scene(scroll, 1200, 700);
+            var css = getClass().getResource("/style/historial-traslado.css");
+
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+
+            stage.setTitle("Logistic S.A.C. - Historial de traslados");
+            stage.setScene(scene);
+            stage.show();
+            stage.centerOnScreen();
+        }
     }
 
-    // arma el texto con todo lo registrado del traslado: productos, documentos, inspeccion, evidencias y recepcion
+    // Arma el texto con los productos, documentos, inspección, evidencias y recepción.
     private String armarDetalle(Traslado traslado) throws SQLException {
         StringBuilder texto = new StringBuilder();
 

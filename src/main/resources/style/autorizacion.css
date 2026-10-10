@@ -1,0 +1,137 @@
+
+.autorizacion-contenedor {
+    -fx-background-color: #f3f6fb;
+    -fx-padding: 16px;
+    -fx-spacing: 16px;
+}
+
+.autorizacion-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e3a5f;
+}
+
+.autorizacion-panel {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 16px;
+    -fx-spacing: 10px;
+}
+
+.autorizacion-panel > .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.autorizacion-contenedor .combo-box {
+    -fx-pref-height: 36px;
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 12px;
+}
+
+.autorizacion-contenedor .combo-box:focused {
+    -fx-border-color: #3b82f6;
+}
+
+.autorizacion-contenedor .table-view {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 12px;
+}
+
+.autorizacion-contenedor .table-view .column-header-background {
+    -fx-background-color: #edf2f7;
+}
+
+.autorizacion-contenedor .table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.autorizacion-contenedor .text-area {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 12px;
+}
+
+.autorizacion-contenedor .text-area:focused {
+    -fx-border-color: #3b82f6;
+}
+
+.autorizacion-contenedor .button {
+    -fx-background-color: #e8eef6;
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px 14px;
+    -fx-cursor: hand;
+}
+
+.autorizacion-contenedor .autorizacion-aprobar {
+    -fx-background-color: #15803d;
+    -fx-text-fill: white;
+}
+
+.autorizacion-contenedor .autorizacion-aprobar:hover {
+    -fx-background-color: #166534;
+}
+
+.autorizacion-contenedor .autorizacion-aprobar:disabled {
+    -fx-opacity: 0.55;
+}
+
+.autorizacion-contenedor .autorizacion-rechazar {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+}
+
+.autorizacion-contenedor .autorizacion-rechazar:hover {
+    -fx-background-color: #b91c1c;
+}
+
+.autorizacion-contenedor .autorizacion-volver {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+}
+
+.autorizacion-estado {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+    -fx-wrap-text: true;
+}
+
+.autorizacion-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+    -fx-wrap-text: true;
+}
+
+.autorizacion-scroll {
+    -fx-background-color: #f3f6fb;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: #d5deea;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.autorizacion-scroll > .viewport {
+    -fx-background-color: #f3f6fb;
+}
+
+.autorizacion-scroll > .corner {
+    -fx-background-color: #f1f5f9;
+}

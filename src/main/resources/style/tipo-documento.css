@@ -1,0 +1,114 @@
+
+.tipo-documento-contenedor {
+    -fx-background-color: #f4f7fb;
+    -fx-padding: 20;
+}
+
+.tipo-documento-scroll {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: #d5deea;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+}
+
+.tipo-documento-scroll > .viewport {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8px;
+}
+
+.tipo-documento-scroll > .corner {
+    -fx-background-color: #f1f5f9;
+}
+
+.tipo-documento-titulo {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #243b53;
+}
+
+.tipo-documento-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #e1e8f0;
+    -fx-border-radius: 10;
+    -fx-padding: 18;
+}
+
+.tipo-documento-panel .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+}
+
+.tipo-documento-panel .text-field,
+.tipo-documento-panel .combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-pref-height: 34;
+}
+
+.tipo-documento-panel .text-field:focused,
+.tipo-documento-panel .combo-box:focused {
+    -fx-border-color: #3b82f6;
+}
+
+.tipo-documento-checkbox {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+}
+
+.tipo-documento-contenedor .tipo-documento-volver,
+.tipo-documento-contenedor .tipo-documento-registrar,
+.tipo-documento-contenedor .button {
+    -fx-background-color: #e7edf6;
+    -fx-text-fill: #17365d;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 18;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.tipo-documento-contenedor .tipo-documento-registrar:hover,
+.tipo-documento-contenedor .button:hover {
+    -fx-background-color: #d5e1f1;
+}
+
+.tipo-documento-panel .table-view,
+.tipo-documento-tabla {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.tipo-documento-panel .table-view .column-header-background,
+.tipo-documento-tabla .column-header-background {
+    -fx-background-color: #edf2f7;
+}
+
+.tipo-documento-panel .table-view .column-header .label,
+.tipo-documento-tabla .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.tipo-documento-panel .table-view .table-cell,
+.tipo-documento-tabla .table-cell {
+    -fx-padding: 7;
+    -fx-text-fill: #334155;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+}
+
+.tipo-documento-panel .table-view .table-row-cell:selected,
+.tipo-documento-tabla .table-row-cell:selected {
+    -fx-background-color: #dbeafe;
+}
+
+.tipo-documento-mensaje {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}
