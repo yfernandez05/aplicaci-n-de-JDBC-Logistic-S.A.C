@@ -35,11 +35,6 @@ public class AlmacenView {
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("ALMACENES");
-        titulo.getStyleClass().add("almacen-titulo");
-
-        Label subtitulo = new Label("Gestión de almacenes y ubicaciones");
-        subtitulo.getStyleClass().add("almacen-subtitulo");
 
         TextField txtCodigo = new TextField();
         txtCodigo.setPromptText("Código");
@@ -149,7 +144,7 @@ public class AlmacenView {
 
         btnVolver.setOnAction(event -> {
             if (dashboardLayout != null) {
-                dashboardLayout.mostrarContenido("Panel principal", null);
+                new DashboardView(usuario).mostrarContenidoInicial(dashboardLayout);
             } else {
                 new DashboardView(usuario).mostrar(stage);
             }
@@ -175,7 +170,7 @@ public class AlmacenView {
         VBox panelFormulario = crearPanel("DATOS DEL ALMACÉN", formulario);
         VBox panelTabla = crearPanel("ALMACENES REGISTRADOS", tabla);
 
-        VBox contenido = new VBox(12, titulo, subtitulo, panelFormulario, botones, panelTabla, mensaje, btnVolver);
+        VBox contenido = new VBox(12, panelFormulario, botones, panelTabla, mensaje, btnVolver);
         contenido.getStyleClass().add("almacen-contenedor");
         contenido.setPadding(new Insets(20));
 

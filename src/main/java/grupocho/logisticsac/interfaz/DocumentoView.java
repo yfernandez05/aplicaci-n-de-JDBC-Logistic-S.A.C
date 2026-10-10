@@ -51,11 +51,6 @@ public class DocumentoView {
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("DOCUMENTOS DE VEHÍCULOS Y CONDUCTORES");
-        titulo.getStyleClass().add("documento-titulo");
-
-        Label subtitulo = new Label("Registro y consulta de documentos");
-        subtitulo.getStyleClass().add("documento-subtitulo");
 
         ComboBox<AmbitoDocumento> cmbAmbito = new ComboBox<>();
         cmbAmbito.getItems().addAll(AmbitoDocumento.VEHICULO, AmbitoDocumento.CONDUCTOR);
@@ -195,7 +190,7 @@ public class DocumentoView {
 
         btnVolver.setOnAction(event -> {
             if (dashboardLayout != null) {
-                dashboardLayout.mostrarContenido("Panel principal", null);
+                new DashboardView(usuario).mostrarContenidoInicial(dashboardLayout);
             } else {
                 new DashboardView(usuario).mostrar(stage);
             }
@@ -236,7 +231,7 @@ public class DocumentoView {
         VBox panelTabla = crearPanel("DOCUMENTOS REGISTRADOS", tabla);
 
         VBox contenido = new VBox(
-                12, titulo, subtitulo, panelFormulario,
+                12,panelFormulario,
                 btnRegistrar, panelTabla, mensaje, btnVolver
         );
         contenido.getStyleClass().add("documento-contenedor");

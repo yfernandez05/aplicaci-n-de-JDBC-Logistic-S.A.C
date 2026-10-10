@@ -79,7 +79,7 @@ public class UsuarioView {
 
         btnVolver.setOnAction(event -> {
             if (dashboardLayout != null) {
-                dashboardLayout.mostrarContenido("Panel principal", null);
+                new DashboardView(usuarioActual).mostrarContenidoInicial(dashboardLayout);
             } else {
                 new DashboardView(usuarioActual).mostrar(stage);
             }

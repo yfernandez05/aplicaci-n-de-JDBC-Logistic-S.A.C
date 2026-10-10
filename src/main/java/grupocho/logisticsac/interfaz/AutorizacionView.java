@@ -51,8 +51,6 @@ public class AutorizacionView {
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("AUTORIZACIÓN DE SALIDA");
-        titulo.getStyleClass().add("autorizacion-titulo");
 
         ComboBox<Traslado> cmbTraslado = new ComboBox<>();
         cmbTraslado.setPromptText("Seleccione un traslado");
@@ -231,7 +229,7 @@ public class AutorizacionView {
 
         btnVolver.setOnAction(event -> {
             if (dashboardLayout != null) {
-                dashboardLayout.mostrarContenido("Panel principal", null);
+                new DashboardView(usuario).mostrarContenidoInicial(dashboardLayout);
             } else {
                 new DashboardView(usuario).mostrar(stage);
             }
@@ -268,7 +266,6 @@ public class AutorizacionView {
 
         VBox contenido = new VBox(
                 16,
-                titulo,
                 panelTraslado,
                 panelDocumentos,
                 panelInspeccion,

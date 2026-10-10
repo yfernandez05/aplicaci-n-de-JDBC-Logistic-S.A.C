@@ -36,8 +36,6 @@ public class TipoDocumentoView {
     }
 
     public void mostrar(Stage stage) {
-        Label titulo = new Label("TIPOS DE DOCUMENTO REQUERIDOS");
-        titulo.getStyleClass().add("tipo-documento-titulo");
 
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Nombre (ejemplo: SOAT)");
@@ -106,7 +104,7 @@ public class TipoDocumentoView {
 
         btnVolver.setOnAction(event -> {
             if (dashboardLayout != null) {
-                dashboardLayout.mostrarContenido("Panel principal", null);
+                new DashboardView(usuario).mostrarContenidoInicial(dashboardLayout);
             } else {
                 new DashboardView(usuario).mostrar(stage);
             }
@@ -130,7 +128,7 @@ public class TipoDocumentoView {
         VBox panelTabla = crearPanel("TIPOS DE DOCUMENTO REGISTRADOS", tabla);
 
         VBox contenido = new VBox(
-                12, titulo, panelFormulario, btnRegistrar,
+                12, panelFormulario, btnRegistrar,
                 panelTabla, mensaje, btnVolver
         );
         contenido.setPadding(new Insets(20));

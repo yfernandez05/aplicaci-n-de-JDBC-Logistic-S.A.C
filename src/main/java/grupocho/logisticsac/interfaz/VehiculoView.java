@@ -41,9 +41,6 @@ public class VehiculoView {
 
     public void mostrar(Stage stage) {
 
-        Label subtitulo = new Label("Gestión de vehículos y capacidad de carga");
-        subtitulo.getStyleClass().add("vehiculo-subtitulo");
-
         TextField txtPlaca = new TextField();
         txtPlaca.setPromptText("Placa");
 
@@ -183,13 +180,12 @@ public class VehiculoView {
 
         btnVolver.setOnAction(event -> {
             if (dashboardLayout != null) {
-                dashboardLayout.mostrarContenido("Panel principal", null);
+                new DashboardView(usuario).mostrarContenidoInicial(dashboardLayout);
             } else {
                 new DashboardView(usuario).mostrar(stage);
             }
         });
 
-        // Formulario distribuido en dos columnas
         GridPane formulario = new GridPane();
         formulario.setHgap(12);
         formulario.setVgap(10);
@@ -223,8 +219,7 @@ public class VehiculoView {
         VBox panelTabla = crearPanel("VEHÍCULOS REGISTRADOS", tabla);
 
         VBox contenido = new VBox(
-                12, subtitulo,
-                panelFormulario, botones,
+                12, panelFormulario, botones,
                 panelTabla, mensaje, btnVolver
         );
 
