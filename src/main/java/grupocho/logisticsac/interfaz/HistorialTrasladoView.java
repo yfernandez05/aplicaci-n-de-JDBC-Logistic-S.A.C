@@ -286,9 +286,7 @@ public class HistorialTrasladoView {
                 tabla.setItems(
                         FXCollections.observableArrayList(trasladoService.listar())
                 );
-                mensaje.setText("");
             } catch (SQLException e) {
-                mensaje.setText("Error al cargar el historial.");
             }
         });
 

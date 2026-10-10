@@ -52,12 +52,11 @@ public class TrasladoView {
     private final ConductorService conductorService;
     private final TipoDocumentoService tipoDocumentoService;
     private final DashboardLayout dashboardLayout;
-    // Constructor para mantener compatibilidad con las llamadas existentes.
+
     public TrasladoView(Usuario usuario) {
         this(usuario, null);
     }
 
-    // Constructor para mostrar el módulo dentro del dashboard.
     public TrasladoView(Usuario usuario, DashboardLayout dashboardLayout) {
         this.usuario = usuario;
         this.dashboardLayout = dashboardLayout;
@@ -81,11 +80,9 @@ public class TrasladoView {
 
     public void mostrar(Stage stage) {
 
-        // Título
         Label titulo = new Label("REGISTRAR TRASLADO");
         titulo.getStyleClass().add("traslado-titulo");
 
-        // Datos generales
         TextField txtCodigo = new TextField();
         txtCodigo.setPromptText("Código del traslado");
 
@@ -135,7 +132,6 @@ public class TrasladoView {
         tablaDetalles.getColumns().addAll(colProducto, colCantidad);
         tablaDetalles.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Documentos
         ComboBox<TipoDocumento> cmbTipoDocumento = new ComboBox<>();
         cmbTipoDocumento.setPromptText("Tipo de documento");
         cmbTipoDocumento.setMaxWidth(Double.MAX_VALUE);
@@ -158,7 +154,58 @@ public class TrasladoView {
         tablaDocumentos.setPrefHeight(150);
         tablaDocumentos.setMinHeight(120);
 
-        // Botones principales
+
+
+        Label tituloHistorial = new Label("Traslados registrados");
+        tituloHistorial.getStyleClass().add("traslado-titulo");
+
+        TableView<Traslado> tablaTraslados = new TableView<>();
+        tablaTraslados.setPrefHeight(170);
+        tablaTraslados.setMinHeight(140);
+        tablaTraslados.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Traslado, String> colCodigoTraslado = new TableColumn<>("Código");
+        colCodigoTraslado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCodigo()));
+
+        TableColumn<Traslado, String> colFechaTraslado = new TableColumn<>("Fecha");
+        colFechaTraslado.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getFechaProgramada())));
+
+        TableColumn<Traslado, String> colOrigenTraslado = new TableColumn<>("Origen");
+        colOrigenTraslado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAlmacenOrigen().getNombre()));
+
+        TableColumn<Traslado, String> colDestinoTraslado = new TableColumn<>("Destino");
+        colDestinoTraslado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAlmacenDestino().getNombre()));
+
+        TableColumn<Traslado, String> colVehiculoTraslado = new TableColumn<>("Placa");
+        colVehiculoTraslado.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getVehiculo().getPlaca()));
+
+        TableColumn<Traslado, String> colEstadoTraslado = new TableColumn<>("Estado");
+        colEstadoTraslado.setCellValueFactory(data -> new SimpleStringProperty( String.valueOf(data.getValue().getEstado())));
+
+        tablaTraslados.getColumns().addAll(
+                colCodigoTraslado,
+                colFechaTraslado,
+                colOrigenTraslado,
+                colDestinoTraslado,
+                colVehiculoTraslado,
+                colEstadoTraslado
+        );
+
+        Label mensajeHistorial = new Label();
+        mensajeHistorial.setWrapText(true);
+
+        Button btnActualizarHistorial = new Button("Recargar lista");
+
+        VBox panelHistorial = new VBox(
+                8,
+                tituloHistorial,
+                tablaTraslados,
+                btnActualizarHistorial,
+                mensajeHistorial
+        );
+        panelHistorial.setPadding(new Insets(16));
+        panelHistorial.getStyleClass().add("traslado-panel");
+
         Button btnRegistrar = new Button("Registrar traslado");
         btnRegistrar.getStyleClass().add("traslado-registrar");
 
@@ -169,7 +216,6 @@ public class TrasladoView {
         mensaje.setWrapText(true);
         mensaje.getStyleClass().add("traslado-mensaje");
 
-        // Formulario general
         GridPane formulario = new GridPane();
         formulario.setHgap(10);
         formulario.setVgap(12);
@@ -193,7 +239,6 @@ public class TrasladoView {
         formulario.add(new Label("Conductor:"), 0, 5);
         formulario.add(cmbConductor, 1, 5);
 
-        // Distribución del formulario
         GridPane.setHgrow(txtCodigo, Priority.ALWAYS);
         GridPane.setHgrow(fechaProgramada, Priority.ALWAYS);
         GridPane.setHgrow(cmbOrigen, Priority.ALWAYS);
@@ -204,7 +249,6 @@ public class TrasladoView {
         txtCodigo.setMaxWidth(Double.MAX_VALUE);
         fechaProgramada.setMaxWidth(Double.MAX_VALUE);
 
-        // Cargar datos desde la base de datos
         try {
             cmbOrigen.getItems().addAll(almacenService.listar());
             cmbDestino.getItems().addAll(almacenService.listar());
@@ -218,7 +262,9 @@ public class TrasladoView {
             mensaje.setText("No se pudieron cargar los datos de la base de datos.");
         }
 
-        // Agregar producto
+        cargarTablaTraslados(tablaTraslados, mensajeHistorial);
+        btnActualizarHistorial.setOnAction(event -> cargarTablaTraslados(tablaTraslados, mensajeHistorial));
+
         btnAgregarProducto.setOnAction(event -> {
             Producto producto = cmbProducto.getValue();
 
@@ -245,7 +291,6 @@ public class TrasladoView {
             mensaje.setText("");
         });
 
-        // Quitar producto
         btnQuitarProducto.setOnAction(event -> {
             DetalleTraslado seleccionado = tablaDetalles.getSelectionModel().getSelectedItem();
 
@@ -367,6 +412,7 @@ public class TrasladoView {
                 }
 
                 trasladoService.registrar(traslado);
+                cargarTablaTraslados(tablaTraslados, mensajeHistorial);
 
                 mensaje.setText("Traslado " + traslado.getCodigo() + " registrado correctamente. Estado: " + traslado.getEstado());
 
@@ -406,7 +452,6 @@ public class TrasladoView {
         datos.setMinWidth(290);
         datos.getStyleClass().add("traslado-panel");
 
-        // Panel de productos y documentos
         Label tituloProductos = new Label("Productos del traslado");
         Label tituloDocumentos = new Label("Documentos del traslado");
 
@@ -452,8 +497,13 @@ public class TrasladoView {
         listas.getStyleClass().add("traslado-panel");
 
         HBox formularioTraslado = new HBox(18, datos, listas);
-        formularioTraslado.setPadding(new Insets(10));
-        formularioTraslado.getStyleClass().add("traslado-contenedor");
+
+        VBox contenidoTraslado = new VBox(
+                12,
+                formularioTraslado,
+                panelHistorial
+        );
+        contenidoTraslado.setPadding(new Insets(16));
 
         HBox.setHgrow(listas, Priority.ALWAYS);
 
@@ -464,7 +514,7 @@ public class TrasladoView {
                 scene.getStylesheets().add(css.toExternalForm());
             }
 
-            ScrollPane scroll = new ScrollPane(formularioTraslado);
+            ScrollPane scroll = new ScrollPane(contenidoTraslado);
             scroll.setFitToWidth(true);
             scroll.setPannable(true);
             scroll.getStyleClass().add("traslado-scroll");
@@ -473,7 +523,7 @@ public class TrasladoView {
 
         } else {
 
-            ScrollPane scroll = new ScrollPane(formularioTraslado);
+            ScrollPane scroll = new ScrollPane(contenidoTraslado);
             scroll.setFitToWidth(true);
             scroll.setPannable(true);
 
@@ -490,4 +540,16 @@ public class TrasladoView {
             stage.centerOnScreen();
         }
     }
+
+
+    private void cargarTablaTraslados( TableView<Traslado> tablaTraslados, Label mensajeHistorial) {
+        try {
+            tablaTraslados.setItems(FXCollections.observableArrayList(trasladoService.listar()));
+            mensajeHistorial.setText("");
+        } catch (SQLException e) {
+            mensajeHistorial.setText("No se pudo cargar el listado de traslados.");
+        }
+    }
+
 }
+
